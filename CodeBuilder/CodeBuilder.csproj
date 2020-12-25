@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharpCode\CodeBuilder.cs" />
+    <Compile Include="CSharpCode\CodeGenerate.cs" />
+    <Compile Include="CSharpCode\CodeTemplate.cs" />
     <Compile Include="Code\CSharpTemplate.cs" />
     <Compile Include="Code\ICodeTemplate.cs" />
     <Compile Include="Config\DataModelConfig.cs">
@@ -98,5 +101,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

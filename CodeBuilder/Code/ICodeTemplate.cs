@@ -1,6 +1,6 @@
 ﻿namespace CodeBuilder.Code
 {
-    public interface ICodeTemplate
+    public  interface ICodeTemplate
     {
         ICodeTemplate ImportNamespace(params string[] names);
         void Save(string path);

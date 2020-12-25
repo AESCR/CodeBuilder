@@ -14,6 +14,10 @@ namespace CodeBuilder.Code
             _codeBuilder = new StringBuilder();
         }
 
+        public void x()
+        {
+
+        }
 
         public ICodeTemplate ImportNamespace(params string[] names)
         {
