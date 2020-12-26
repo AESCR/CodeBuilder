@@ -23,7 +23,7 @@ namespace CodeBuilder.Code
         public ClassGenerate SetNamespace(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-            _cSharp.NamespaceName = name;
+            _cSharp.NamespaceName = name.Substring(0, 1).ToUpper() + name.Substring(1); ;
             return this;
         }
 
@@ -45,7 +45,7 @@ namespace CodeBuilder.Code
         public ClassGenerate SetClassName(string name,string comment="")
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-            _cSharp.ClassName = name;
+            _cSharp.ClassName = name.Substring(0, 1).ToUpper() + name.Substring(1); ;
             if (_cSharp.Comment==null)
             {
                 _cSharp.Comment=new CommentTemplate();
@@ -184,6 +184,10 @@ namespace CodeBuilder.Code
             field.Comment=new CommentTemplate();
             field.Comment.CommentName = comment;
             field.Name = name;
+            if (limit== "public")
+            {
+                field.Name=name.Substring(0, 1).ToUpper() + name.Substring(1);
+            }
             field.FiledLimit = limit;
             field.ReturnType = type;
 
@@ -364,10 +368,18 @@ namespace CodeBuilder.Code
             return method;
         }
 
-        public MethodGenerate SetName(string name, string @return = "void")
+        public MethodGenerate SetMethodName(string name, string limit = "public",string @return = "void")
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-            method.MethodName = name;
+            if (method.MethodLimit== "public")
+            {
+                method.MethodName = name.Substring(0, 1).ToUpper() + name.Substring(1); ;
+            }
+            else
+            {
+                method.MethodName = name;
+            }
+            method.MethodLimit = limit;
             method.ReturnType = @return;
             return this;
         }
