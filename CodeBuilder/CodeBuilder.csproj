@@ -52,11 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CSharpCode\CodeBuilder.cs" />
-    <Compile Include="CSharpCode\CodeGenerate.cs" />
-    <Compile Include="CSharpCode\CodeTemplate.cs" />
-    <Compile Include="Code\CSharpTemplate.cs" />
-    <Compile Include="Code\ICodeTemplate.cs" />
+    <Compile Include="Code\CodeBuilder.cs" />
+    <Compile Include="Code\CodeGenerate.cs" />
+    <Compile Include="Code\CodeTemplate.cs" />
     <Compile Include="Config\DataModelConfig.cs">
       <SubType>Form</SubType>
     </Compile>

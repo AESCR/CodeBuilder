@@ -102,39 +102,39 @@ namespace CodeBuilder
                 string sqlStr = @"SELECT
 	表名 =
 CASE
-		
+
 		WHEN A.colorder= 1 THEN
-		D.name ELSE '' 
+		D.name ELSE ''
 	END,
 	表说明 =
 CASE
-	
+
 	WHEN A.colorder= 1 THEN
-	isnull( F.value, '' ) ELSE '' 
+	isnull( F.value, '' ) ELSE ''
 	END,
 	字段序号 = A.colorder,
 	字段名 = A.name,
 	字段说明 = isnull( G.[value], '' ),
 	标识 =
 CASE
-		
+
 		WHEN COLUMNPROPERTY( A.id, A.name, 'IsIdentity' ) = 1 THEN
-		'√' ELSE '' 
+		'√' ELSE ''
 	END,
 	主键 =
 CASE
-	
+
 	WHEN EXISTS (
 	SELECT
-		1 
+		1
 	FROM
-		sysobjects 
+		sysobjects
 	WHERE
-		xtype = 'PK' 
-		AND parent_obj = A.id 
-		AND name IN ( SELECT name FROM sysindexes WHERE indid IN ( SELECT indid FROM sysindexkeys WHERE id = A.id AND colid = A.colid ) ) 
+		xtype = 'PK'
+		AND parent_obj = A.id
+		AND name IN ( SELECT name FROM sysindexes WHERE indid IN ( SELECT indid FROM sysindexkeys WHERE id = A.id AND colid = A.colid ) )
 		) THEN
-		'√' ELSE '' 
+		'√' ELSE ''
 	END,
 	类型 = B.name,
 --占用字节数 = A.Length,
@@ -143,23 +143,23 @@ CASE
 	小数位数 = isnull( COLUMNPROPERTY( A.id, A.name, 'Scale' ), 0 ),
 	允许空 =
 CASE
-		
+
 		WHEN A.isnullable= 1 THEN
-		'√' ELSE '' 
+		'√' ELSE ''
 	END,
-	默认值 = isnull( E.Text, '' ) 
+	默认值 = isnull( E.Text, '' )
 FROM
 	syscolumns A
 	LEFT JOIN systypes B ON A.xusertype= B.xusertype
-	INNER JOIN sysobjects D ON A.id= D.id 
-	AND D.xtype= 'U' 
+	INNER JOIN sysobjects D ON A.id= D.id
+	AND D.xtype= 'U'
 	AND D.name<> 'dtproperties'
 	LEFT JOIN syscomments E ON A.cdefault= E.id
-	LEFT JOIN sys.extended_properties G ON A.id= G.major_id 
+	LEFT JOIN sys.extended_properties G ON A.id= G.major_id
 	AND A.colid= G.minor_id
-	LEFT JOIN sys.extended_properties F ON D.id= F.major_id 
+	LEFT JOIN sys.extended_properties F ON D.id= F.major_id
 	AND F.minor_id= 0 --where d.name='OrderInfo' --如果只查询指定表,加上此条件
-	
+
 ORDER BY
 	A.id,
 	A.colorder";
@@ -171,56 +171,31 @@ ORDER BY
         }
 
         private void ReadDatSet(DataTable dt)
-        {
-            //创建文件夹
-            Directory.CreateDirectory(Path.Combine(_modelConfig.SavePath, "DBModel"));
-            Directory.CreateDirectory(Path.Combine(_modelConfig.SavePath, "InPutModel"));
-            Directory.CreateDirectory(Path.Combine(_modelConfig.SavePath, "OutPutModel"));
+        {;
+            Code.CodeBuilder codeBuilder = new Code.CodeBuilder();
             for (int index = 0; index < dt.Rows.Count;)
             {
                 DataRow dataRow = dt.Rows[index];
+                var dbTemplate = codeBuilder.Load();
+                dbTemplate.SetNamespace(_modelConfig.Namespace);
                 var tableName = dataRow["表名"].ToString();
-                if (!string.IsNullOrWhiteSpace(tableName))
+                dbTemplate.SetClassName(tableName, dataRow["表说明"].ToString());
+                do
                 {
-                    CSharpTemplate dbTemplate = new CSharpTemplate();
-                    dbTemplate.ImportNamespace();
-                    dbTemplate.SetNamespace(_modelConfig.Namespace);
-                    dbTemplate.SetClass(tableName, dataRow["表说明"].ToString(),false);
-                    dbTemplate.SetProperty(DbToCsharpType(dataRow["类型"].ToString(), dataRow["允许空"].ToString() == "√"), dataRow["字段名"].ToString(), dataRow["字段说明"].ToString());
-                    while (true)
+                    DataRow tempRow = dt.Rows[index];
+                    dbTemplate.SetProperty(name: tempRow["字段名"].ToString(),
+                        type: DbToCsharpType(tempRow["类型"].ToString(), tempRow["允许空"].ToString() == "√"),
+                        comment: tempRow["字段说明"].ToString());
+                    index++;
+                    if (index== dt.Rows.Count)
                     {
-                         index++;
-                        if (index < dt.Rows.Count)
-                        {
-                            DataRow tempDataRow = dt.Rows[index];
-                            var hasTableName = string.IsNullOrWhiteSpace(tempDataRow["表名"].ToString());
-                            if (hasTableName == false)
-                            {
-                                break;
-                            }
-                            dbTemplate.SetProperty(DbToCsharpType(tempDataRow["类型"].ToString(), tempDataRow["允许空"].ToString() == "√"), tempDataRow["字段名"].ToString(), tempDataRow["字段说明"].ToString());
-                        }
-                        else
-                        {
-                            break; ;
-                        }
+                        break;
                     }
-                    dbTemplate.Save(Path.Combine(_modelConfig.SavePath, "DBModel/", tableName));
-                }
+                } while (string.IsNullOrWhiteSpace(dt.Rows[index]["表名"].ToString()));
             }
-            //
-            var folders= FindFolder("DBModel");
-            foreach (string folder in folders)
-            {
-                var name = Path.GetFileNameWithoutExtension(folder);
-                Directory.CreateDirectory(Path.Combine(_modelConfig.SavePath, $"InPutModel/{name}"));
-                new CSharpTemplate().SetClass(_modelConfig.Namespace,$"Add{name}").Save(Path.Combine(_modelConfig.SavePath, $"InPutModel/{name}/Add{name}"));
-                new CSharpTemplate().SetClass(_modelConfig.Namespace, $"Edit{name}").Save(Path.Combine(_modelConfig.SavePath, $"InPutModel/{name}/Edit{name}"));
-                new CSharpTemplate().SetClass(_modelConfig.Namespace, $"Search{name}").Save(Path.Combine(_modelConfig.SavePath, $"InPutModel/{name}/Search{name}"));
-                Directory.CreateDirectory(Path.Combine(_modelConfig.SavePath, $"OutPutModel/{Path.GetFileNameWithoutExtension(folder)}"));
-                new CSharpTemplate().SetClass(_modelConfig.Namespace, $"{name}View").Save(Path.Combine(_modelConfig.SavePath, $"OutPutModel/{name}/{name}View"));
-            }
+            codeBuilder.Save();
         }
+
         /// <summary>
         /// 数据库中与c#中的数据类型对照
         /// </summary>
@@ -235,78 +210,103 @@ ORDER BY
                 case "int":
                     ravel = "int";
                     break;
+
                 case "text":
                     ravel = "string";
                     break;
+
                 case "bigint":
                     ravel = "long";
                     break;
+
                 case "binary":
                     ravel = "byte[]";
                     break;
+
                 case "bit":
                     ravel = "bool";
                     break;
+
                 case "char":
                     ravel = "string";
                     break;
+
                 case "datetime":
                     ravel = "DateTime";
                     break;
+
                 case "decimal":
                     ravel = "decimal";
                     break;
+
                 case "float":
                     ravel = "double";
                     break;
+
                 case "image":
                     ravel = "byte[]";
                     break;
+
                 case "money":
                     ravel = "decimal";
                     break;
+
                 case "nchar":
                     ravel = "string";
                     break;
+
                 case "ntext":
                     ravel = "string";
                     break;
+
                 case "numeric":
                     ravel = "decimal";
                     break;
+
                 case "nvarchar":
                     ravel = "string";
                     break;
+
                 case "real":
                     ravel = "float";
                     break;
+
                 case "smalldatetime":
                     ravel = "DateTime";
                     break;
+
                 case "smallint":
                     ravel = "int";
                     break;
+
                 case "smallmoney":
                     ravel = "decimal";
                     break;
+
                 case "timestamp":
                     ravel = "DateTime";
                     break;
+
                 case "tinyint":
                     ravel = "byte";
                     break;
+
                 case "uniqueidentifier":
                     ravel = "string";
                     break;
+
                 case "varbinary":
                     ravel = "byte[]";
                     break;
+
                 case "varchar":
                     ravel = "string";
                     break;
+
                 case "variant":
                     ravel = "object";
                     break;
+
                 default:
                     ravel = "string";
                     break;
