@@ -38,9 +38,9 @@ namespace CodeBuilder.Code
         public void Save(string path=".")
         {
             //开始输出模板
-            for (int i = 0; i < _code.Count; i++)
+            foreach (var t in _code)
             {
-                var file = _code[i].Generate();
+                var file = t.Generate();
                 using (FileStream fileStream=new FileStream($"{path}/{file.Name}",FileMode.Create,FileAccess.ReadWrite))
                 {
                     var bytes= Encoding.UTF8.GetBytes(file.Content);
