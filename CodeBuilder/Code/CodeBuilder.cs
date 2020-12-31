@@ -31,7 +31,10 @@ namespace CodeBuilder.Code
             _code.Add(codeGenerate);
             return codeGenerate;
         }
-
+        /// <summary>
+        /// 保存模板
+        /// </summary>
+        /// <param name="path">保存位置</param>
         public void Save(string path=".")
         {
             //开始输出模板
