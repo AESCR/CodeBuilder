@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+
 namespace CodeBuilder.Code
 {
     public class ClassGenerate
@@ -17,6 +18,7 @@ namespace CodeBuilder.Code
             _cSharp.ImportNamespace.Add("System.Text");
             _cSharp.ImportNamespace.Add("System.Threading.Tasks");
             _cSharp.ImportNamespace.Add("System.Collections.Generic");
+            _cSharp.ImportNamespace.Add("System.ComponentModel.DataAnnotations");
         }
         private readonly CodeTemplate _cSharp = new CodeTemplate();
 
@@ -53,131 +55,8 @@ namespace CodeBuilder.Code
             _cSharp.Comment.CommentName = comment;
             return this;
         }
-        /// <summary>
-        /// 数据库中与c#中的数据类型对照
-        /// </summary>
-        /// <param name="type">数据库类型</param>
-        /// <param name="isNull">可空类型</param>
-        /// <returns>C#类型</returns>
-        public static string DbToCsharpType(string type, bool isNull = false)
-        {
-            string ravel;
-            switch (type)
-            {
-                case "int":
-                    ravel = "int";
-                    break;
-
-                case "text":
-                    ravel = "string";
-                    break;
-
-                case "bigint":
-                    ravel = "long";
-                    break;
-
-                case "binary":
-                    ravel = "byte[]";
-                    break;
-
-                case "bit":
-                    ravel = "bool";
-                    break;
-
-                case "char":
-                    ravel = "string";
-                    break;
-
-                case "datetime":
-                    ravel = "DateTime";
-                    break;
-
-                case "decimal":
-                    ravel = "decimal";
-                    break;
-
-                case "float":
-                    ravel = "double";
-                    break;
-
-                case "image":
-                    ravel = "byte[]";
-                    break;
-
-                case "money":
-                    ravel = "decimal";
-                    break;
-
-                case "nchar":
-                    ravel = "string";
-                    break;
-
-                case "ntext":
-                    ravel = "string";
-                    break;
-
-                case "numeric":
-                    ravel = "decimal";
-                    break;
-
-                case "nvarchar":
-                    ravel = "string";
-                    break;
-
-                case "real":
-                    ravel = "float";
-                    break;
-
-                case "smalldatetime":
-                    ravel = "DateTime";
-                    break;
-
-                case "smallint":
-                    ravel = "int";
-                    break;
-
-                case "smallmoney":
-                    ravel = "decimal";
-                    break;
-
-                case "timestamp":
-                    ravel = "DateTime";
-                    break;
-
-                case "tinyint":
-                    ravel = "byte";
-                    break;
-
-                case "uniqueidentifier":
-                    ravel = "string";
-                    break;
-
-                case "varbinary":
-                    ravel = "byte[]";
-                    break;
-
-                case "varchar":
-                    ravel = "string";
-                    break;
-
-                case "variant":
-                    ravel = "object";
-                    break;
-
-                default:
-                    ravel = "string";
-                    break;
-            }
-            if (isNull)
-            {
-                if (ravel != "string" && ravel != "object" && ravel != "byte[]")
-                {
-                    ravel += "?";
-                }
-            }
-            return ravel;
-        }
-        public ClassGenerate SetProperty(string name,string limit= "public", string type="string", string comment = "")
+  
+        public ClassGenerate SetProperty(string name,string limit= "public", string type="string", string comment = "",string dbType="")
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
             var field = new FieldTemplate();
@@ -188,9 +67,21 @@ namespace CodeBuilder.Code
             {
                 field.Name=name.Substring(0, 1).ToUpper() + name.Substring(1);
             }
+            field.DbType = dbType;
             field.FiledLimit = limit;
             field.ReturnType = type;
 
+            _cSharp.Fields.Add(field);
+            return this;
+        }
+        public ClassGenerate SetProperty(FieldTemplate fieldTemplate, CommentTemplate commentTemplate)
+        {
+            var field = fieldTemplate;
+            field.Comment = commentTemplate;
+            if (fieldTemplate.FiledLimit == "public")
+            {
+                field.Name = fieldTemplate.FiledLimit.Substring(0, 1).ToUpper() + fieldTemplate.FiledLimit.Substring(1);
+            }
             _cSharp.Fields.Add(field);
             return this;
         }
@@ -234,6 +125,7 @@ namespace CodeBuilder.Code
                         stringWriter.WriteLine(tabCoincide+ "/// <summary>");
                         stringWriter.WriteLine(tabCoincide + "/// "+ _cSharp.Comment.CommentName);
                         stringWriter.WriteLine(tabCoincide + "/// </summary>");
+                        stringWriter.WriteLine(tabCoincide + $"[Comment(\"{_cSharp.Comment.CommentName}\")]");
                     }
                     //设置类名
                     {
@@ -279,12 +171,35 @@ namespace CodeBuilder.Code
                                     stringWriter.WriteLine(tabProperty + "/// <summary>");
                                     stringWriter.WriteLine(tabProperty + "/// " + f.Comment.CommentName);
                                     stringWriter.WriteLine(tabProperty + "/// </summary>");
+                                   
                                 }
                                 if (f.IsProperty)
                                 {
-                                    stringWriter.Write(tabProperty);
-                                    stringWriter.Write($"{f.FiledLimit} {f.ReturnType} {f.Name}");
-                                    stringWriter.WriteLine("{get;set;}");
+                                    var commentName = f.Comment?.CommentName;
+                                    if (string.IsNullOrWhiteSpace(commentName))
+                                    {
+                                        if (f.IsKey)
+                                        {
+                                            stringWriter.WriteLine(tabProperty + $"[Required]");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (f.IsKey)
+                                        {
+                                            stringWriter.WriteLine(tabProperty + $"[Required(ErrorMessage = \"{commentName}\")]");
+                                        }
+                                        stringWriter.WriteLine(tabProperty + $"[Comment(\"{f.Comment.CommentName}\")]");
+                                    }
+                                    if (f.MaxLength>0)
+                                    {
+                                        stringWriter.WriteLine(tabProperty + $"[MaxLength({f.MaxLength})]");
+                                    }
+                                    if (string.IsNullOrEmpty(f.DbType)==false)
+                                    {
+                                        stringWriter.WriteLine(tabProperty + $"[Column(TypeName = \"{f.DbType}\")]");
+                                    }
+                                    stringWriter.WriteLine(tabProperty+$"{f.FiledLimit} {f.ReturnType} {f.Name}"+ "{get;set;}");
                                 }
                                 else
                                 {

@@ -1,4 +1,6 @@
-﻿namespace CodeBuilder
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CodeBuilder
 {
     public class ModelConfig
     {

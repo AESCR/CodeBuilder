@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CCWin.SkinClass;
 using CodeBuilder.Code;
 using Newtonsoft.Json;
 
@@ -18,7 +19,8 @@ namespace CodeBuilder
 {
     public partial class Main : Skin_VS
     {
-        private SqlConnection _sqlCon;
+       private  string SqlConStr =>
+            $"Data Source = {skinTextBoxAddress.Text.Trim()} ; Initial Catalog = master ; User ID ={skinTextBoxAccount.Text.Trim()} ; Password = {skinTextBoxPassword.Text}";
 
         public Main()
         {
@@ -33,17 +35,23 @@ namespace CodeBuilder
             if (!File.Exists("appconfig.bin"))
             {
                 _modelConfig = new ModelConfig();
-            };
-            using (FileStream fileStream =
-                new FileStream("appconfig.bin", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                skinTextBoxAccount.Text = _modelConfig.DataAccount;
+                skinTextBoxPassword.Text = _modelConfig.DataPassword;
+                skinTextBoxAddress.Text = _modelConfig.DataAddress;
+            }
+            else
             {
-                StreamReader sr = new StreamReader(fileStream, Encoding.UTF8);
-                var json = sr.ReadToEnd();
-                var modelConfig = JsonConvert.DeserializeObject<ModelConfig>(json);
-                _modelConfig = modelConfig;
-                skinTextBoxAccount.Text = modelConfig.DataAccount;
-                skinTextBoxPassword.Text = modelConfig.DataPassword;
-                skinTextBoxAddress.Text = modelConfig.DataAddress;
+                using (FileStream fileStream =
+                    new FileStream("appconfig.bin", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    StreamReader sr = new StreamReader(fileStream, Encoding.UTF8);
+                    var json = sr.ReadToEnd();
+                    var modelConfig = JsonConvert.DeserializeObject<ModelConfig>(json);
+                    _modelConfig = modelConfig;
+                    skinTextBoxAccount.Text = modelConfig.DataAccount;
+                    skinTextBoxPassword.Text = modelConfig.DataPassword;
+                    skinTextBoxAddress.Text = modelConfig.DataAddress;
+                }
             }
         }
 
@@ -60,30 +68,31 @@ namespace CodeBuilder
         /// <param name="e"></param>
         private void skinBtnConnect_Click(object sender, EventArgs e)
         {
-            string sqlConStr =
-                $"Data Source = {skinTextBoxAddress.Text.Trim()} ; Initial Catalog = master ; User ID ={skinTextBoxAccount.Text.Trim()} ; Password = {skinTextBoxPassword.Text}";
-            _sqlCon = new SqlConnection(sqlConStr);
-            _sqlCon.Open();
-            Task.Run(() =>
+           
+            using (SqlConnection _sqlCon = new SqlConnection(SqlConStr))
             {
-                ModelConfig modelConfig = new ModelConfig();
-                modelConfig.DataAccount = skinTextBoxAccount.Text.Trim();
-                modelConfig.DataPassword = skinTextBoxPassword.Text.Trim();
-                modelConfig.DataAddress = skinTextBoxAddress.Text.Trim();
-                using (FileStream fileStream = new FileStream("appconfig.bin", FileMode.Create, FileAccess.Write,
-                    FileShare.ReadWrite))
+                _sqlCon.Open();
+                Task.Run(() =>
                 {
-                    var strJson = JsonConvert.SerializeObject(modelConfig);
-                    var by = Encoding.UTF8.GetBytes(strJson);
-                    fileStream.Write(by, 0, by.Length);
-                    fileStream.Close();
-                }
-            });
-            SqlDataAdapter sda = new SqlDataAdapter("select name from sysdatabases", _sqlCon);
-            DataSet ds = new DataSet();
-            sda.Fill(ds);
-            skinComboBoxDatabase.DataSource = ds.Tables[0];
-            skinComboBoxDatabase.DisplayMember = "name";
+                    ModelConfig modelConfig = new ModelConfig();
+                    modelConfig.DataAccount = skinTextBoxAccount.Text.Trim();
+                    modelConfig.DataPassword = skinTextBoxPassword.Text.Trim();
+                    modelConfig.DataAddress = skinTextBoxAddress.Text.Trim();
+                    using (FileStream fileStream = new FileStream("appconfig.bin", FileMode.Create, FileAccess.Write,
+                        FileShare.ReadWrite))
+                    {
+                        var strJson = JsonConvert.SerializeObject(modelConfig);
+                        var by = Encoding.UTF8.GetBytes(strJson);
+                        fileStream.Write(by, 0, by.Length);
+                        fileStream.Close();
+                    }
+                });
+                SqlDataAdapter sda = new SqlDataAdapter("select name from sysdatabases", _sqlCon);
+                DataSet ds = new DataSet();
+                sda.Fill(ds);
+                skinComboBoxDatabase.DataSource = ds.Tables[0];
+                skinComboBoxDatabase.DisplayMember = "name";
+            }
         }
 
         private void skinBtnBuilder_Click(object sender, EventArgs e)
@@ -93,11 +102,11 @@ namespace CodeBuilder
             {
                 return;
             }
-
             var database = dataRow.Row[0];
-            if ((_sqlCon.State & ConnectionState.Open) != 0)
+            using (SqlConnection sqlCon = new SqlConnection(SqlConStr))
             {
-                SqlCommand command = new SqlCommand($"use {database};", _sqlCon);
+                sqlCon.Open();
+                SqlCommand command = new SqlCommand($"use {database};", sqlCon);
                 command.ExecuteNonQuery();
                 string sqlStr = @"SELECT
 	表名 =
@@ -163,29 +172,42 @@ FROM
 ORDER BY
 	A.id,
 	A.colorder";
-                SqlDataAdapter sda = new SqlDataAdapter(sqlStr, _sqlCon);
+                SqlDataAdapter sda = new SqlDataAdapter(sqlStr, sqlCon);
                 DataSet ds = new DataSet();
                 sda.Fill(ds);
-                ReadDatSet(ds.Tables[0]);
+                ReadModelDatSet(ds.Tables[0]);
             }
+
         }
 
-        private void ReadDatSet(DataTable dt)
-        {;
+        private void ReadModelDatSet(DataTable dt)
+        {
             Code.CodeBuilder codeBuilder = new Code.CodeBuilder();
+            var nameText = skinTextNamespace.Text ?? _modelConfig.Namespace;
             for (int index = 0; index < dt.Rows.Count;)
             {
                 DataRow dataRow = dt.Rows[index];
                 var dbTemplate = codeBuilder.Load();
-                dbTemplate.SetNamespace(_modelConfig.Namespace);
+                dbTemplate.SetNamespace(nameText);
                 var tableName = dataRow["表名"].ToString();
                 dbTemplate.SetClassName(tableName, dataRow["表说明"].ToString());
                 do
                 {
                     DataRow tempRow = dt.Rows[index];
-                    dbTemplate.SetProperty(name: tempRow["字段名"].ToString(),
+                    var field = new FieldTemplate();
+                    var comment = new CommentTemplate();
+                    field.Name = tempRow["字段名"].ToString();
+                    comment.CommentName = tempRow["字段说明"].ToString();
+                    field.DbType = tempRow["类型"].ToString();
+                    field.MaxLength = tempRow["长度"].ToString().ToInt32();
+                    field.Comment = comment;
+                    field.Name = tempRow["字段名"].ToString();
+                    field.CanNull = tempRow["允许空"].ToString() == "√";
+                    field.ReturnType = DbToCsharpType(tempRow["类型"].ToString());
+                    dbTemplate.SetProperty(field, comment);
+                    /*dbTemplate.SetProperty(name: tempRow["字段名"].ToString(),
                         type: DbToCsharpType(tempRow["类型"].ToString(), tempRow["允许空"].ToString() == "√"),
-                        comment: tempRow["字段说明"].ToString());
+                        comment: tempRow["字段说明"].ToString(), dbType:tempRow["类型"].ToString());*/
                     index++;
                     if (index== dt.Rows.Count)
                     {
@@ -193,7 +215,7 @@ ORDER BY
                     }
                 } while (string.IsNullOrWhiteSpace(dt.Rows[index]["表名"].ToString()));
             }
-            codeBuilder.Save();
+            codeBuilder.Save("Model");
         }
 
         /// <summary>

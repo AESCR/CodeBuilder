@@ -32,13 +32,18 @@ namespace CodeBuilder
             this.components = new System.ComponentModel.Container();
             this.skinGroupBox1 = new CCWin.SkinControl.SkinGroupBox();
             this.skinComboBoxDatabase = new CCWin.SkinControl.SkinComboBox();
-            this.skinDataConfigBtn = new CCWin.SkinControl.SkinButton();
-            this.skinBtnBuilder = new CCWin.SkinControl.SkinButton();
             this.skinBtnConnect = new CCWin.SkinControl.SkinButton();
             this.skinTextBoxPassword = new CCWin.SkinControl.SkinTextBox();
             this.skinTextBoxAccount = new CCWin.SkinControl.SkinTextBox();
             this.skinTextBoxAddress = new CCWin.SkinControl.SkinTextBox();
+            this.skinGroupBox3 = new CCWin.SkinControl.SkinGroupBox();
+            this.skinCheckBox1 = new CCWin.SkinControl.SkinCheckBox();
+            this.skinTextNamespace = new CCWin.SkinControl.SkinTextBox();
+            this.skinButton5 = new CCWin.SkinControl.SkinButton();
+            this.skinGroupBox2 = new CCWin.SkinControl.SkinGroupBox();
+            this.skinCheckBox2 = new CCWin.SkinControl.SkinCheckBox();
             this.skinGroupBox1.SuspendLayout();
+            this.skinGroupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinGroupBox1
@@ -46,8 +51,6 @@ namespace CodeBuilder
             this.skinGroupBox1.BackColor = System.Drawing.Color.Transparent;
             this.skinGroupBox1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.skinGroupBox1.Controls.Add(this.skinComboBoxDatabase);
-            this.skinGroupBox1.Controls.Add(this.skinDataConfigBtn);
-            this.skinGroupBox1.Controls.Add(this.skinBtnBuilder);
             this.skinGroupBox1.Controls.Add(this.skinBtnConnect);
             this.skinGroupBox1.Controls.Add(this.skinTextBoxPassword);
             this.skinGroupBox1.Controls.Add(this.skinTextBoxAccount);
@@ -59,7 +62,7 @@ namespace CodeBuilder
             this.skinGroupBox1.Name = "skinGroupBox1";
             this.skinGroupBox1.RectBackColor = System.Drawing.Color.White;
             this.skinGroupBox1.RoundStyle = CCWin.SkinClass.RoundStyle.All;
-            this.skinGroupBox1.Size = new System.Drawing.Size(1067, 76);
+            this.skinGroupBox1.Size = new System.Drawing.Size(852, 76);
             this.skinGroupBox1.TabIndex = 0;
             this.skinGroupBox1.TabStop = false;
             this.skinGroupBox1.Text = "数据库实体生成";
@@ -76,41 +79,7 @@ namespace CodeBuilder
             this.skinComboBoxDatabase.Name = "skinComboBoxDatabase";
             this.skinComboBoxDatabase.Size = new System.Drawing.Size(133, 27);
             this.skinComboBoxDatabase.TabIndex = 2;
-            this.skinComboBoxDatabase.WaterText = "";
-            // 
-            // skinDataConfigBtn
-            // 
-            this.skinDataConfigBtn.BackColor = System.Drawing.Color.Transparent;
-            this.skinDataConfigBtn.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinDataConfigBtn.DownBack = null;
-            this.skinDataConfigBtn.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.skinDataConfigBtn.InheritColor = true;
-            this.skinDataConfigBtn.Location = new System.Drawing.Point(969, 32);
-            this.skinDataConfigBtn.MouseBack = null;
-            this.skinDataConfigBtn.Name = "skinDataConfigBtn";
-            this.skinDataConfigBtn.NormlBack = null;
-            this.skinDataConfigBtn.Size = new System.Drawing.Size(92, 28);
-            this.skinDataConfigBtn.TabIndex = 1;
-            this.skinDataConfigBtn.Text = "配置生成规则";
-            this.skinDataConfigBtn.UseVisualStyleBackColor = false;
-            this.skinDataConfigBtn.Click += new System.EventHandler(this.skinDataConfigBtn_Click);
-            // 
-            // skinBtnBuilder
-            // 
-            this.skinBtnBuilder.BackColor = System.Drawing.Color.Transparent;
-            this.skinBtnBuilder.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinBtnBuilder.DownBack = null;
-            this.skinBtnBuilder.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.skinBtnBuilder.InheritColor = true;
-            this.skinBtnBuilder.Location = new System.Drawing.Point(857, 32);
-            this.skinBtnBuilder.MouseBack = null;
-            this.skinBtnBuilder.Name = "skinBtnBuilder";
-            this.skinBtnBuilder.NormlBack = null;
-            this.skinBtnBuilder.Size = new System.Drawing.Size(92, 28);
-            this.skinBtnBuilder.TabIndex = 1;
-            this.skinBtnBuilder.Text = "生成实体";
-            this.skinBtnBuilder.UseVisualStyleBackColor = false;
-            this.skinBtnBuilder.Click += new System.EventHandler(this.skinBtnBuilder_Click);
+            this.skinComboBoxDatabase.WaterText = "请选择数据库";
             // 
             // skinBtnConnect
             // 
@@ -125,7 +94,7 @@ namespace CodeBuilder
             this.skinBtnConnect.NormlBack = null;
             this.skinBtnConnect.Size = new System.Drawing.Size(77, 28);
             this.skinBtnConnect.TabIndex = 1;
-            this.skinBtnConnect.Text = "连 接";
+            this.skinBtnConnect.Text = "测试连接";
             this.skinBtnConnect.UseVisualStyleBackColor = false;
             this.skinBtnConnect.Click += new System.EventHandler(this.skinBtnConnect_Click);
             // 
@@ -258,12 +227,155 @@ namespace CodeBuilder
             this.skinTextBoxAddress.WaterText = "请输入数据库地址";
             this.skinTextBoxAddress.WordWrap = true;
             // 
+            // skinGroupBox3
+            // 
+            this.skinGroupBox3.BackColor = System.Drawing.Color.Transparent;
+            this.skinGroupBox3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.skinGroupBox3.Controls.Add(this.skinCheckBox2);
+            this.skinGroupBox3.Controls.Add(this.skinCheckBox1);
+            this.skinGroupBox3.Controls.Add(this.skinTextNamespace);
+            this.skinGroupBox3.Controls.Add(this.skinButton5);
+            this.skinGroupBox3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.skinGroupBox3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinGroupBox3.ForeColor = System.Drawing.Color.Black;
+            this.skinGroupBox3.Location = new System.Drawing.Point(8, 115);
+            this.skinGroupBox3.Name = "skinGroupBox3";
+            this.skinGroupBox3.RectBackColor = System.Drawing.Color.White;
+            this.skinGroupBox3.RoundStyle = CCWin.SkinClass.RoundStyle.All;
+            this.skinGroupBox3.Size = new System.Drawing.Size(852, 76);
+            this.skinGroupBox3.TabIndex = 2;
+            this.skinGroupBox3.TabStop = false;
+            this.skinGroupBox3.Text = "数据库实体生成";
+            this.skinGroupBox3.TitleBorderColor = System.Drawing.Color.Transparent;
+            this.skinGroupBox3.TitleRectBackColor = System.Drawing.Color.White;
+            this.skinGroupBox3.TitleRoundStyle = CCWin.SkinClass.RoundStyle.All;
+            // 
+            // skinCheckBox1
+            // 
+            this.skinCheckBox1.AutoSize = true;
+            this.skinCheckBox1.BackColor = System.Drawing.Color.Transparent;
+            this.skinCheckBox1.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinCheckBox1.DownBack = null;
+            this.skinCheckBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinCheckBox1.Location = new System.Drawing.Point(235, 40);
+            this.skinCheckBox1.MouseBack = null;
+            this.skinCheckBox1.Name = "skinCheckBox1";
+            this.skinCheckBox1.NormlBack = null;
+            this.skinCheckBox1.SelectedDownBack = null;
+            this.skinCheckBox1.SelectedMouseBack = null;
+            this.skinCheckBox1.SelectedNormlBack = null;
+            this.skinCheckBox1.Size = new System.Drawing.Size(80, 21);
+            this.skinCheckBox1.TabIndex = 4;
+            this.skinCheckBox1.Text = "移除字符_";
+            this.skinCheckBox1.UseVisualStyleBackColor = false;
+            // 
+            // skinTextNamespace
+            // 
+            this.skinTextNamespace.BackColor = System.Drawing.Color.Transparent;
+            this.skinTextNamespace.DownBack = null;
+            this.skinTextNamespace.Icon = null;
+            this.skinTextNamespace.IconIsButton = false;
+            this.skinTextNamespace.IconMouseState = CCWin.SkinClass.ControlState.Normal;
+            this.skinTextNamespace.IsPasswordChat = '\0';
+            this.skinTextNamespace.IsSystemPasswordChar = false;
+            this.skinTextNamespace.Lines = new string[] {
+        "Aescr.Model"};
+            this.skinTextNamespace.Location = new System.Drawing.Point(22, 32);
+            this.skinTextNamespace.Margin = new System.Windows.Forms.Padding(0);
+            this.skinTextNamespace.MaxLength = 32767;
+            this.skinTextNamespace.MinimumSize = new System.Drawing.Size(28, 28);
+            this.skinTextNamespace.MouseBack = null;
+            this.skinTextNamespace.MouseState = CCWin.SkinClass.ControlState.Normal;
+            this.skinTextNamespace.Multiline = false;
+            this.skinTextNamespace.Name = "skinTextNamespace";
+            this.skinTextNamespace.NormlBack = null;
+            this.skinTextNamespace.Padding = new System.Windows.Forms.Padding(5);
+            this.skinTextNamespace.ReadOnly = false;
+            this.skinTextNamespace.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.skinTextNamespace.Size = new System.Drawing.Size(185, 28);
+            // 
+            // 
+            // 
+            this.skinTextNamespace.SkinTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.skinTextNamespace.SkinTxt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.skinTextNamespace.SkinTxt.Font = new System.Drawing.Font("微软雅黑", 9.75F);
+            this.skinTextNamespace.SkinTxt.Location = new System.Drawing.Point(5, 5);
+            this.skinTextNamespace.SkinTxt.Name = "BaseText";
+            this.skinTextNamespace.SkinTxt.Size = new System.Drawing.Size(175, 18);
+            this.skinTextNamespace.SkinTxt.TabIndex = 0;
+            this.skinTextNamespace.SkinTxt.Text = "Aescr.Model";
+            this.skinTextNamespace.SkinTxt.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            this.skinTextNamespace.SkinTxt.WaterText = "命名空间名称";
+            this.skinTextNamespace.TabIndex = 2;
+            this.skinTextNamespace.Text = "Aescr.Model";
+            this.skinTextNamespace.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.skinTextNamespace.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            this.skinTextNamespace.WaterText = "命名空间名称";
+            this.skinTextNamespace.WordWrap = true;
+            // 
+            // skinButton5
+            // 
+            this.skinButton5.BackColor = System.Drawing.Color.Transparent;
+            this.skinButton5.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinButton5.DownBack = null;
+            this.skinButton5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinButton5.InheritColor = true;
+            this.skinButton5.Location = new System.Drawing.Point(701, 33);
+            this.skinButton5.MouseBack = null;
+            this.skinButton5.Name = "skinButton5";
+            this.skinButton5.NormlBack = null;
+            this.skinButton5.Size = new System.Drawing.Size(133, 28);
+            this.skinButton5.TabIndex = 1;
+            this.skinButton5.Text = "生成实体";
+            this.skinButton5.UseVisualStyleBackColor = false;
+            this.skinButton5.Click += new System.EventHandler(this.skinBtnBuilder_Click);
+            // 
+            // skinGroupBox2
+            // 
+            this.skinGroupBox2.BackColor = System.Drawing.Color.Transparent;
+            this.skinGroupBox2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.skinGroupBox2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.skinGroupBox2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinGroupBox2.ForeColor = System.Drawing.Color.Black;
+            this.skinGroupBox2.Location = new System.Drawing.Point(8, 191);
+            this.skinGroupBox2.Name = "skinGroupBox2";
+            this.skinGroupBox2.RectBackColor = System.Drawing.Color.White;
+            this.skinGroupBox2.RoundStyle = CCWin.SkinClass.RoundStyle.All;
+            this.skinGroupBox2.Size = new System.Drawing.Size(852, 76);
+            this.skinGroupBox2.TabIndex = 3;
+            this.skinGroupBox2.TabStop = false;
+            this.skinGroupBox2.Text = "接口层生成";
+            this.skinGroupBox2.TitleBorderColor = System.Drawing.Color.Transparent;
+            this.skinGroupBox2.TitleRectBackColor = System.Drawing.Color.White;
+            this.skinGroupBox2.TitleRoundStyle = CCWin.SkinClass.RoundStyle.All;
+            // 
+            // skinCheckBox2
+            // 
+            this.skinCheckBox2.AutoSize = true;
+            this.skinCheckBox2.BackColor = System.Drawing.Color.Transparent;
+            this.skinCheckBox2.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinCheckBox2.DownBack = null;
+            this.skinCheckBox2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinCheckBox2.Location = new System.Drawing.Point(385, 40);
+            this.skinCheckBox2.MouseBack = null;
+            this.skinCheckBox2.Name = "skinCheckBox2";
+            this.skinCheckBox2.NormlBack = null;
+            this.skinCheckBox2.SelectedDownBack = null;
+            this.skinCheckBox2.SelectedMouseBack = null;
+            this.skinCheckBox2.SelectedNormlBack = null;
+            this.skinCheckBox2.Size = new System.Drawing.Size(75, 21);
+            this.skinCheckBox2.TabIndex = 4;
+            this.skinCheckBox2.Text = "包含视图";
+            this.skinCheckBox2.UseVisualStyleBackColor = false;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1083, 450);
+            this.ClientSize = new System.Drawing.Size(868, 450);
+            this.Controls.Add(this.skinGroupBox2);
+            this.Controls.Add(this.skinGroupBox3);
             this.Controls.Add(this.skinGroupBox1);
             this.MaximizeBox = false;
             this.Name = "Main";
@@ -271,6 +383,8 @@ namespace CodeBuilder
             this.Text = "代码构造器";
             this.TitleCenter = true;
             this.skinGroupBox1.ResumeLayout(false);
+            this.skinGroupBox3.ResumeLayout(false);
+            this.skinGroupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -281,10 +395,14 @@ namespace CodeBuilder
         private CCWin.SkinControl.SkinTextBox skinTextBoxAddress;
         private CCWin.SkinControl.SkinButton skinBtnConnect;
         private CCWin.SkinControl.SkinComboBox skinComboBoxDatabase;
-        private CCWin.SkinControl.SkinButton skinBtnBuilder;
-        private CCWin.SkinControl.SkinButton skinDataConfigBtn;
         private CCWin.SkinControl.SkinTextBox skinTextBoxAccount;
         private CCWin.SkinControl.SkinTextBox skinTextBoxPassword;
+        private CCWin.SkinControl.SkinGroupBox skinGroupBox3;
+        private CCWin.SkinControl.SkinButton skinButton5;
+        private CCWin.SkinControl.SkinGroupBox skinGroupBox2;
+        private CCWin.SkinControl.SkinTextBox skinTextNamespace;
+        private CCWin.SkinControl.SkinCheckBox skinCheckBox1;
+        private CCWin.SkinControl.SkinCheckBox skinCheckBox2;
     }
 }
 

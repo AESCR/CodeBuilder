@@ -37,11 +37,21 @@ namespace CodeBuilder.Code
         /// <param name="path">保存位置</param>
         public void Save(string path=".")
         {
+          
             //开始输出模板
             foreach (var t in _code)
             {
                 var file = t.Generate();
-                using (FileStream fileStream=new FileStream($"{path}/{file.Name}",FileMode.Create,FileAccess.ReadWrite))
+                var fpath = $"{path}/{file.Name}";
+                var directoryName= Path.GetDirectoryName(fpath);
+                if (string.IsNullOrEmpty(directoryName)==false)
+                {
+                    if (Directory.Exists(directoryName) == false)
+                    {
+                        Directory.CreateDirectory(directoryName);
+                    }
+                }
+                using (FileStream fileStream=new FileStream(fpath, FileMode.Create,FileAccess.ReadWrite))
                 {
                     var bytes= Encoding.UTF8.GetBytes(file.Content);
                     fileStream.Write(bytes,0, bytes.Length);

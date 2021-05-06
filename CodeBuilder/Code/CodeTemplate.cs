@@ -55,9 +55,14 @@ namespace CodeBuilder.Code
     {
         public CommentTemplate Comment { get; set; }
         public bool IsProperty { get; set; } = true;
+        public bool IsKey { get; set; }
+        public int MinLength { get; set; } = 0;
+        public int MaxLength { get; set; } = 0;
         public string ReturnType { get; set; } = "string";
         public string Name { get; set; }
         public string FiledLimit { get; set; }= VisitLimit.EveryOne.GetDescription();
+        public bool CanNull { get; set; } = false;
+        public string DbType { get; set; }
     }
     public class MethodTemplate
     {
