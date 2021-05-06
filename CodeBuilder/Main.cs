@@ -12,11 +12,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CCWin.SkinClass;
-using CodeBuilder.Code;
+using CodeBuilder.Code.Generate;
+using CodeBuilder.Code.Template;
 using Newtonsoft.Json;
 
 namespace CodeBuilder
 {
+    
     public partial class Main : Skin_VS
     {
        private  string SqlConStr =>
@@ -52,6 +54,7 @@ namespace CodeBuilder
                     skinTextBoxPassword.Text = modelConfig.DataPassword;
                     skinTextBoxAddress.Text = modelConfig.DataAddress;
                 }
+                ReadDb();
             }
         }
 
@@ -68,16 +71,38 @@ namespace CodeBuilder
         /// <param name="e"></param>
         private void skinBtnConnect_Click(object sender, EventArgs e)
         {
-           
-            using (SqlConnection _sqlCon = new SqlConnection(SqlConStr))
+             ReadDb();
+        }
+
+        private void skinBtnBuilder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                _sqlCon.Open();
-                Task.Run(() =>
+                CodeGenerate codeGenerate=new CodeGenerate();
+                codeGenerate.SavePath= dialog.SelectedPath+"/Model";
+                ReadModelTable(codeGenerate);
+                CreateDbContext(codeGenerate);
+                codeGenerate.Save();
+                MessageBox.Show("实体生成成功！", "提 示", MessageBoxButtons.OK);
+            }
+        }
+        /// <summary>
+        /// 读取数据库列表
+        /// </summary>
+        private bool ReadDb()
+        {
+            using (SqlConnection sqlCon = new SqlConnection(SqlConStr))
+            {
+                try
                 {
-                    ModelConfig modelConfig = new ModelConfig();
-                    modelConfig.DataAccount = skinTextBoxAccount.Text.Trim();
-                    modelConfig.DataPassword = skinTextBoxPassword.Text.Trim();
-                    modelConfig.DataAddress = skinTextBoxAddress.Text.Trim();
+                    sqlCon.Open();
+                    ModelConfig modelConfig = new ModelConfig
+                    {
+                        DataAccount = skinTextBoxAccount.Text.Trim(),
+                        DataPassword = skinTextBoxPassword.Text.Trim(),
+                        DataAddress = skinTextBoxAddress.Text.Trim()
+                    };
                     using (FileStream fileStream = new FileStream("appconfig.bin", FileMode.Create, FileAccess.Write,
                         FileShare.ReadWrite))
                     {
@@ -86,28 +111,39 @@ namespace CodeBuilder
                         fileStream.Write(by, 0, by.Length);
                         fileStream.Close();
                     }
-                });
-                SqlDataAdapter sda = new SqlDataAdapter("select name from sysdatabases", _sqlCon);
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+              
+                SqlDataAdapter sda = new SqlDataAdapter("select name from sysdatabases", sqlCon);
                 DataSet ds = new DataSet();
                 sda.Fill(ds);
                 skinComboBoxDatabase.DataSource = ds.Tables[0];
                 skinComboBoxDatabase.DisplayMember = "name";
+                return true;
             }
         }
-
-        private void skinBtnBuilder_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 读取当前选中的表
+        /// </summary>
+        private DataTable ReadTable()
         {
             var dataRow = skinComboBoxDatabase.SelectedItem as DataRowView;
             if (dataRow == null)
             {
-                return;
+                MessageBox.Show("请先选择要使用的库", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
             }
-            var database = dataRow.Row[0];
+            var database = dataRow.Row[0].ToString();
             using (SqlConnection sqlCon = new SqlConnection(SqlConStr))
             {
                 sqlCon.Open();
                 SqlCommand command = new SqlCommand($"use {database};", sqlCon);
                 command.ExecuteNonQuery();
+                #region SQL查询语句
+
                 string sqlStr = @"SELECT
 	表名 =
 CASE
@@ -172,177 +208,96 @@ FROM
 ORDER BY
 	A.id,
 	A.colorder";
+
+                #endregion
                 SqlDataAdapter sda = new SqlDataAdapter(sqlStr, sqlCon);
                 DataSet ds = new DataSet();
                 sda.Fill(ds);
-                ReadModelDatSet(ds.Tables[0]);
+                return ds.Tables[0];
             }
-
         }
-
-        private void ReadModelDatSet(DataTable dt)
+        /// <summary>
+        /// 生成实体
+        /// </summary>
+        /// <param name="codeGenerate"></param>
+        private void ReadModelTable(CodeGenerate codeGenerate)
         {
-            Code.CodeBuilder codeBuilder = new Code.CodeBuilder();
+            var dt = ReadTable();
             var nameText = skinTextNamespace.Text ?? _modelConfig.Namespace;
             for (int index = 0; index < dt.Rows.Count;)
             {
                 DataRow dataRow = dt.Rows[index];
-                var dbTemplate = codeBuilder.Load();
-                dbTemplate.SetNamespace(nameText);
-                var tableName = dataRow["表名"].ToString();
-                dbTemplate.SetClassName(tableName, dataRow["表说明"].ToString());
+                NamespaceTemplate namespaceTemplate=new NamespaceTemplate();
+                namespaceTemplate.NamespaceName = nameText;
+                codeGenerate.AddNamespace(namespaceTemplate);
+                ClassTemplate classTemplate=new ClassTemplate();
+                namespaceTemplate.AddClass(classTemplate);
+                if (skinRemoveBoxUnderline.Checked)
+                {
+                    classTemplate.ClassName = dataRow["表名"].ToString();
+                    classTemplate.ClassName= classTemplate.ClassName.Replace("_","");
+                }
+                else
+                {
+                    classTemplate.ClassName = dataRow["表名"].ToString();
+                }
+                classTemplate.RealName = dataRow["表名"].ToString();
+                classTemplate.Comment=new Code.Template.CommentTemplate();
+                classTemplate.Comment.CommentName = dataRow["表说明"].ToString();
                 do
                 {
                     DataRow tempRow = dt.Rows[index];
-                    var field = new FieldTemplate();
-                    var comment = new CommentTemplate();
-                    field.Name = tempRow["字段名"].ToString();
+                    var field = new Code.Template.FieldTemplate();
+                    var comment = new Code.Template.CommentTemplate();
+                    field.FieldName = tempRow["字段名"].ToString();
                     comment.CommentName = tempRow["字段说明"].ToString();
                     field.DbType = tempRow["类型"].ToString();
                     field.MaxLength = tempRow["长度"].ToString().ToInt32();
+                    field.MinLength = 0;
                     field.Comment = comment;
-                    field.Name = tempRow["字段名"].ToString();
+                    field.IsProperty = true;
+                    field.IsKey = tempRow["主键"].ToString() == "√";
                     field.CanNull = tempRow["允许空"].ToString() == "√";
-                    field.ReturnType = DbToCsharpType(tempRow["类型"].ToString());
-                    dbTemplate.SetProperty(field, comment);
-                    /*dbTemplate.SetProperty(name: tempRow["字段名"].ToString(),
-                        type: DbToCsharpType(tempRow["类型"].ToString(), tempRow["允许空"].ToString() == "√"),
-                        comment: tempRow["字段说明"].ToString(), dbType:tempRow["类型"].ToString());*/
+                    field.FieldTypeName = DbToCsharpType.MsSqlToCsharpType(tempRow["类型"].ToString());
+                    classTemplate.AddField(field);
                     index++;
-                    if (index== dt.Rows.Count)
+                    if (index == dt.Rows.Count)
                     {
                         break;
                     }
                 } while (string.IsNullOrWhiteSpace(dt.Rows[index]["表名"].ToString()));
             }
-            codeBuilder.Save("Model");
         }
 
-        /// <summary>
-        /// 数据库中与c#中的数据类型对照
-        /// </summary>
-        /// <param name="type">数据库类型</param>
-        /// <param name="isNull">可空类型</param>
-        /// <returns>C#类型</returns>
-        public static string DbToCsharpType(string type,bool isNull=false)
+        private void CreateDbContext(CodeGenerate code)
         {
-            string ravel;
-            switch (type)
+            if (skinCheckBoxContext.Checked==false)
             {
-                case "int":
-                    ravel = "int";
-                    break;
-
-                case "text":
-                    ravel = "string";
-                    break;
-
-                case "bigint":
-                    ravel = "long";
-                    break;
-
-                case "binary":
-                    ravel = "byte[]";
-                    break;
-
-                case "bit":
-                    ravel = "bool";
-                    break;
-
-                case "char":
-                    ravel = "string";
-                    break;
-
-                case "datetime":
-                    ravel = "DateTime";
-                    break;
-
-                case "decimal":
-                    ravel = "decimal";
-                    break;
-
-                case "float":
-                    ravel = "double";
-                    break;
-
-                case "image":
-                    ravel = "byte[]";
-                    break;
-
-                case "money":
-                    ravel = "decimal";
-                    break;
-
-                case "nchar":
-                    ravel = "string";
-                    break;
-
-                case "ntext":
-                    ravel = "string";
-                    break;
-
-                case "numeric":
-                    ravel = "decimal";
-                    break;
-
-                case "nvarchar":
-                    ravel = "string";
-                    break;
-
-                case "real":
-                    ravel = "float";
-                    break;
-
-                case "smalldatetime":
-                    ravel = "DateTime";
-                    break;
-
-                case "smallint":
-                    ravel = "int";
-                    break;
-
-                case "smallmoney":
-                    ravel = "decimal";
-                    break;
-
-                case "timestamp":
-                    ravel = "DateTime";
-                    break;
-
-                case "tinyint":
-                    ravel = "byte";
-                    break;
-
-                case "uniqueidentifier":
-                    ravel = "string";
-                    break;
-
-                case "varbinary":
-                    ravel = "byte[]";
-                    break;
-
-                case "varchar":
-                    ravel = "string";
-                    break;
-
-                case "variant":
-                    ravel = "object";
-                    break;
-
-                default:
-                    ravel = "string";
-                    break;
+                return;
             }
-            if (isNull)
+            var codeDic = code.Show();
+            var codeGenerate = new CodeGenerate();
+            codeGenerate.SavePath = Path.Combine(code.SavePath, "../");
+            var namespaceTemplate = new NamespaceTemplate();
+            codeGenerate.AddNamespace(namespaceTemplate);
+            namespaceTemplate.NamespaceName = "Microsoft.EntityFrameworkCore";
+            var classTemplate= new ClassTemplate();
+            namespaceTemplate.AddClass(classTemplate);
+            classTemplate.ClassName=skinComboBoxDatabase.Text.Trim()+ "DbContext";
+            classTemplate.BaseClass =new ClassTemplate()
             {
-                if (ravel!="string"&& ravel!= "object" && ravel != "byte[]")
-                {
-                    ravel += "?";
-                }
+                ClassName = "DbContext"
+            };
+           
+            foreach (KeyValuePair<string, string> keyValuePair in codeDic)
+            {
+                var field = new FieldTemplate();
+                field.FieldName = keyValuePair.Key;
+                field.FieldTypeName = $"DbSet<{keyValuePair.Key}>";
+                classTemplate.AddField(field);
             }
-            return ravel;
+            codeGenerate.Save();
         }
-
         public static List<string> FindFolder(string path,bool depth=false)
         {
             List<string> resultList=new List<string>();

@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,12 +39,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\TableToModel\TableModelForm\CSkin 4.0\CSkin.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -63,10 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\CodeBuilder.cs" />
-    <Compile Include="Code\CodeGenerate.cs" />
-    <Compile Include="Code\CodeTemplate.cs" />
-    <Compile Include="Code\DbToCsharpType.cs" />
+    <Compile Include="Code\Generate\DbToCsharpType.cs" />
     <Compile Include="Code\Generate\CodeGenerate.cs" />
     <Compile Include="Code\Template\ClassTemplate.cs" />
     <Compile Include="Code\Template\CommentTemplate.cs" />
@@ -131,6 +124,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Form\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CSkin\CSkin.dll" />
+    <Content Include="CSkin\CSkin.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

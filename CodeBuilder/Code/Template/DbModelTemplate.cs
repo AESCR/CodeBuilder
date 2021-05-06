@@ -14,7 +14,7 @@ namespace CodeBuilder.Code.Template
         /// <summary>
         /// 是否是主键
         /// </summary>
-        public bool IsKey { get; set; }
+        public bool IsKey { get; set; } = false;
         /// <summary>
         /// 最小长度
         /// </summary>
@@ -27,5 +27,9 @@ namespace CodeBuilder.Code.Template
         /// 数据库类型
         /// </summary>
         public string DbType { get; set; }
+        /// <summary>
+        /// 小数位数
+        /// </summary>
+        public int? DecimalDigits { get; set; }
     }
 }

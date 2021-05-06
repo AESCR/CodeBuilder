@@ -12,9 +12,9 @@ namespace CodeBuilder.Code.Template
     public class MethodParameterTemplate
     {
         /// <summary>
-        /// 是泛型
+        /// 参数类型
         /// </summary>
-        public bool IsGenerics { get; set; } = false;
+        public string ParameterTypeName { get; set; }
         /// <summary>
         /// 参数名称
         /// </summary>
