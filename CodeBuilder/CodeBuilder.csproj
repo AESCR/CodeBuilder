@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbTool\DbConnect.cs" />
     <Compile Include="Code\Generate\DbToCsharpType.cs" />
     <Compile Include="Code\Generate\CodeGenerate.cs" />
     <Compile Include="Code\Template\ClassTemplate.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Config\DataModelConfig.Designer.cs">
       <DependentUpon>DataModelConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="DbTool\DataBaseType.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>

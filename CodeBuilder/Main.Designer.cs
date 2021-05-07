@@ -344,11 +344,11 @@ namespace CodeBuilder
             this.skinButton5.DownBack = null;
             this.skinButton5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.skinButton5.InheritColor = true;
-            this.skinButton5.Location = new System.Drawing.Point(819, 33);
+            this.skinButton5.Location = new System.Drawing.Point(716, 33);
             this.skinButton5.MouseBack = null;
             this.skinButton5.Name = "skinButton5";
             this.skinButton5.NormlBack = null;
-            this.skinButton5.Size = new System.Drawing.Size(133, 28);
+            this.skinButton5.Size = new System.Drawing.Size(236, 28);
             this.skinButton5.TabIndex = 1;
             this.skinButton5.Text = "生成实体";
             this.skinButton5.UseVisualStyleBackColor = false;
