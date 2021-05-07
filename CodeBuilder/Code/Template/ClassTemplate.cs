@@ -119,10 +119,29 @@ namespace CodeBuilder.Code.Template
                             }
                         }
                     }
+                    //设置方法
+                    {
+                        foreach (var m in _methodsCode)
+                        {
+                            var filed = m.Generate();
+                            using (StringReader stringReader = new StringReader(filed))
+                            {
+                                while (stringReader.Peek() != -1)
+                                {
+                                    stringWriter.WriteLine("\t" + stringReader.ReadLine());
+                                }
+                            }
+                        }
+                    }
                     stringWriter.WriteLine("}");
                 }
                 return stringWriter.ToString();
             }
+        }
+
+        public List<FieldTemplate> GetField()
+        {
+            return _fieldsCode;
         }
     }
 }

@@ -66,6 +66,7 @@ namespace CodeBuilder.Code.Template
         {
             MethodLimit = visitLimit.GetCustomAttributeDescription();
         }
+        public List<string> Codes=new List<string>();
         /// <summary>
         /// 生成代码
         /// </summary>
@@ -82,17 +83,37 @@ namespace CodeBuilder.Code.Template
                     stringWriter.WriteLine("/// " + Comment.CommentName);
                 }
                 var parameters = string.Empty;
+                int index = 0;
                 foreach (MethodParameterTemplate parameter in Parameters)
                 {
                     parameters = parameters + $"{parameter.ParameterTypeName} {parameter.ParameterName}";
+                    index++;
+                    if (index!= Parameters.Count)
+                    {
+                        parameters += ",";
+                    }
                     stringWriter.WriteLine("/// <param name="+ parameter.ParameterName+ ">"+parameter.Remark+"</param>");
                 }
                 stringWriter.WriteLine("/// </summary>");
 
                 if (Overwrite)
                 {
-                    stringWriter.WriteLine($"{MethodLimit} override {ReturnName} {MethodName}()");
+                    stringWriter.WriteLine($"{MethodLimit} override {ReturnName} {MethodName}({parameters})");
                 }
+                else
+                {
+                    stringWriter.WriteLine($"{MethodLimit} {ReturnName} {MethodName}({parameters})");
+                }
+                stringWriter.WriteLine("{");
+                if (Codes.Count==0)
+                {
+                    stringWriter.WriteLine("\tthrow null;");
+                }
+                foreach (var code in Codes)
+                {
+                    stringWriter.WriteLine("\t"+code);
+                }
+                stringWriter.WriteLine("}");
                 return stringWriter.ToString();
             }
 

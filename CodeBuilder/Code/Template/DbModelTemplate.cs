@@ -12,6 +12,10 @@ namespace CodeBuilder.Code.Template
     public class DbModelTemplate
     {
         /// <summary>
+        /// 是否是数据库实体
+        /// </summary>
+        public bool IsDbModel { get; set; } =true;
+        /// <summary>
         /// 是否是主键
         /// </summary>
         public bool IsKey { get; set; } = false;

@@ -75,5 +75,10 @@ namespace CodeBuilder.Code.Template
                 return stringWriter.ToString();
             }
         }
+
+        public List<ClassTemplate> GetClass()
+        {
+            return _classTemplate;
+        }
     }
 }

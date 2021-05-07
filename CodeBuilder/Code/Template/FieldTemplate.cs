@@ -64,62 +64,66 @@ namespace CodeBuilder.Code.Template
                 }
                 if (IsProperty)
                 {
-                    var commentName = Comment?.CommentName;
-                    if (string.IsNullOrWhiteSpace(commentName))
+                    if (IsDbModel)
                     {
-                        if (IsKey)
+                        var commentName = Comment?.CommentName;
+                        if (string.IsNullOrWhiteSpace(commentName))
                         {
-                            stringWriter.WriteLine("[Required]");
+                            if (IsKey)
+                            {
+                                stringWriter.WriteLine("[Required]");
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (IsKey)
+                        else
                         {
-                            stringWriter.WriteLine($"[Required(ErrorMessage = \"{commentName}\")]");
-                        }
+                            if (IsKey)
+                            {
+                                stringWriter.WriteLine($"[Required(ErrorMessage = \"{commentName}\")]");
+                            }
 #if NET5_0
                         stringWriter.WriteLine($"[Comment(\"{Comment.CommentName}\")]");
 #endif
 
-                    }
+                        }
 
-                    if (MaxLength > 0)
-                    {
-                        stringWriter.WriteLine($"[MaxLength({MaxLength})]");
-                    }
-                    if (MinLength > 0)
-                    {
-                        stringWriter.WriteLine($"[MinLength({MinLength})]");
-                    }
-                    if (string.IsNullOrEmpty(DbType) == false)
-                    {
-                        var max = MaxLength.ToString();
-                        if (MaxLength==-1)
+                        if (MaxLength > 0)
                         {
-                            max = "max";
+                            stringWriter.WriteLine($"[MaxLength({MaxLength})]");
                         }
-                        if (DbType.Contains("(")==false)
+                        if (MinLength > 0)
                         {
-                            if (DbType.Contains("varchar"))
+                            stringWriter.WriteLine($"[MinLength({MinLength})]");
+                        }
+                        if (string.IsNullOrEmpty(DbType) == false)
+                        {
+                            var max = MaxLength.ToString();
+                            if (MaxLength == -1)
                             {
-                                DbType = DbType + "(" + max + ")";
+                                max = "max";
                             }
-                            else if(DbType.Contains("varbinary"))
+                            if (DbType.Contains("(") == false)
                             {
-                                DbType += $"({max})";
-                            }
-                            else if(DbType.Contains("decimal"))
-                            {
-                                if (DecimalDigits==null)
+                                if (DbType.Contains("varchar"))
                                 {
-                                    DecimalDigits=2;
+                                    DbType = DbType + "(" + max + ")";
                                 }
-                                DbType = DbType + $"({MaxLength},{DecimalDigits})";
+                                else if (DbType.Contains("varbinary"))
+                                {
+                                    DbType += $"({max})";
+                                }
+                                else if (DbType.Contains("decimal"))
+                                {
+                                    if (DecimalDigits == null)
+                                    {
+                                        DecimalDigits = 2;
+                                    }
+                                    DbType = DbType + $"({MaxLength},{DecimalDigits})";
+                                }
                             }
+                            stringWriter.WriteLine($"[Column(TypeName = \"{DbType}\")]");
                         }
-                        stringWriter.WriteLine($"[Column(TypeName = \"{DbType}\")]");
                     }
+                
 
                     stringWriter.WriteLine($"{FiledLimit} {FieldTypeName} {FieldName}" + "{get;set;}");
                 }

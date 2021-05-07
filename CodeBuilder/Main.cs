@@ -34,6 +34,7 @@ namespace CodeBuilder
 
         private void Init()
         {
+            skinComboxDatabaseName.SelectedIndex = 0;
             if (!File.Exists("appconfig.bin"))
             {
                 _modelConfig = new ModelConfig();
@@ -241,6 +242,7 @@ ORDER BY
                 {
                     classTemplate.ClassName = dataRow["表名"].ToString();
                 }
+             
                 classTemplate.RealName = dataRow["表名"].ToString();
                 classTemplate.Comment=new Code.Template.CommentTemplate();
                 classTemplate.Comment.CommentName = dataRow["表说明"].ToString();
@@ -288,35 +290,57 @@ ORDER BY
             {
                 ClassName = "DbContext"
             };
-           
+            var method = new MethodTemplate();
+            classTemplate.AddMethod(method);
+            method.Overwrite = true;
+            method.MethodName = "OnModelCreating";
+            method.Parameters.Add(new MethodParameterTemplate()
+            {
+                ParameterTypeName = "ModelBuilder",
+                ParameterName = "modelBuilder"
+            });
+            var dt = ReadTable();
+            for (int index = 0; index < dt.Rows.Count;)
+            {
+                DataRow dataRow = dt.Rows[index];
+                ClassTemplate tableTemplate = new ClassTemplate();
+                if (skinRemoveBoxUnderline.Checked)
+                {
+                    tableTemplate.ClassName = dataRow["表名"].ToString();
+                    tableTemplate.ClassName = classTemplate.ClassName.Replace("_", "");
+                }
+                else
+                {
+                    tableTemplate.ClassName = dataRow["表名"].ToString();
+                }
+
+                tableTemplate.RealName = dataRow["表名"].ToString();
+                tableTemplate.Comment = new Code.Template.CommentTemplate();
+                tableTemplate.Comment.CommentName = dataRow["表说明"].ToString();
+                method.Codes.Add($"modelBuilder.Entity<{ tableTemplate.ClassName}>().HasComment(\"{tableTemplate.Comment.CommentName  }\");");
+                var field = new Code.Template.FieldTemplate();
+                field.IsDbModel = false;
+                field.FieldName = tableTemplate.ClassName;
+                field.FieldTypeName = $"DbSet<{tableTemplate.ClassName}>";
+                field.IsProperty = true;
+                classTemplate.AddField(field);
+                do
+                {
+                    DataRow tempRow = dt.Rows[index];
+                    method.Codes.Add($"modelBuilder.Entity<{  tableTemplate.ClassName }>().Property(b => b.{ tempRow["字段名"].ToString()}).HasComment(\"{  tempRow["字段说明"].ToString()}\");");
+                    index++;
+                    if (index == dt.Rows.Count)
+                    {
+                        break;
+                    }
+                } while (string.IsNullOrWhiteSpace(dt.Rows[index]["表名"].ToString()));
+            }
+       
             foreach (KeyValuePair<string, string> keyValuePair in codeDic)
             {
-                var field = new FieldTemplate();
-                field.FieldName = keyValuePair.Key;
-                field.FieldTypeName = $"DbSet<{keyValuePair.Key}>";
-                classTemplate.AddField(field);
+                
             }
             codeGenerate.Save();
-        }
-        public static List<string> FindFolder(string path,bool depth=false)
-        {
-            List<string> resultList=new List<string>();
-            DirectoryInfo theFolder = new DirectoryInfo(path);
-            if (depth)
-            {
-                //遍历文件夹
-                foreach (DirectoryInfo nextFolder in theFolder.GetDirectories())
-                {
-                    resultList.AddRange(FindFolder(nextFolder.FullName));
-                }
-            }
-            //遍历文件
-            foreach (FileInfo nextFile in theFolder.GetFiles())
-            {
-                resultList.Add(nextFile.FullName);
-            }
-
-            return resultList;
         }
     }
 }
