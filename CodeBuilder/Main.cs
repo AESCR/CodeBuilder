@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using CCWin.SkinClass;
 using CodeBuilder.Code.Generate;
 using CodeBuilder.Code.Template;
+using CodeBuilder.DbTool;
 using Newtonsoft.Json;
 
 namespace CodeBuilder
@@ -21,8 +22,7 @@ namespace CodeBuilder
     
     public partial class Main : Skin_VS
     {
-       private  string SqlConStr =>
-            $"Data Source = {skinTextBoxAddress.Text.Trim()} ; Initial Catalog = master ; User ID ={skinTextBoxAccount.Text.Trim()} ; Password = {skinTextBoxPassword.Text}";
+        private string SqlConStr => ConnectString;
 
         public Main()
         {
@@ -30,30 +30,24 @@ namespace CodeBuilder
             Init();
         }
 
-        private ModelConfig _modelConfig;
+        private DbConnect _dbConfig;
 
         private void Init()
         {
             skinComboxDatabaseName.SelectedIndex = 0;
-            if (!File.Exists("appconfig.bin"))
-            {
-                _modelConfig = new ModelConfig();
-                skinTextBoxAccount.Text = _modelConfig.DataAccount;
-                skinTextBoxPassword.Text = _modelConfig.DataPassword;
-                skinTextBoxAddress.Text = _modelConfig.DataAddress;
-            }
-            else
+            if (File.Exists("appconfig.bin"))
             {
                 using (FileStream fileStream =
                     new FileStream("appconfig.bin", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     StreamReader sr = new StreamReader(fileStream, Encoding.UTF8);
                     var json = sr.ReadToEnd();
-                    var modelConfig = JsonConvert.DeserializeObject<ModelConfig>(json);
-                    _modelConfig = modelConfig;
-                    skinTextBoxAccount.Text = modelConfig.DataAccount;
-                    skinTextBoxPassword.Text = modelConfig.DataPassword;
-                    skinTextBoxAddress.Text = modelConfig.DataAddress;
+                    var modelConfig = JsonConvert.DeserializeObject<DbConnect>(json);
+                    _dbConfig = modelConfig;
+                    skinTextBoxPort.Text = _dbConfig.Port.ToString();
+                    skinTextBoxAccount.Text = _dbConfig.Account;
+                    skinTextBoxPassword.Text = _dbConfig.Password;
+                    skinTextBoxAddress.Text = _dbConfig.Ip;
                 }
                 ReadDb();
             }
@@ -88,21 +82,55 @@ namespace CodeBuilder
                 MessageBox.Show("实体生成成功！", "提 示", MessageBoxButtons.OK);
             }
         }
+
+        private string ConnectString
+        {
+            get
+            {
+                DbConnect dbConnect = new DbConnect();
+                dbConnect.Ip = skinTextBoxAddress.Text;
+                dbConnect.Port = skinTextBoxPort.Text.ToInt16OrDefault(-1);
+                dbConnect.Account = skinTextBoxAccount.Text;
+                dbConnect.Password = skinTextBoxPassword.Text;
+                DataBaseType dataBaseType = DataBaseType.MsSQL;
+                switch (skinComboxDatabaseName.SelectedIndex)
+                {
+                    case 0:
+                        dataBaseType = DataBaseType.MsSQL;
+                        if (dbConnect.Port == -1)
+                        {
+                            dbConnect.Port = 80;
+                        }
+                        break;
+                    case 1:
+                        dataBaseType = DataBaseType.MySQL;
+                        if (dbConnect.Port == -1)
+                        {
+                            dbConnect.Port = 3306;
+                        }
+                        break;
+                }
+                return dbConnect.GetConnection(dataBaseType);
+            }
+        }
+
         /// <summary>
         /// 读取数据库列表
         /// </summary>
         private bool ReadDb()
         {
+            
             using (SqlConnection sqlCon = new SqlConnection(SqlConStr))
             {
                 try
                 {
                     sqlCon.Open();
-                    ModelConfig modelConfig = new ModelConfig
+                    DbConnect modelConfig = new DbConnect
                     {
-                        DataAccount = skinTextBoxAccount.Text.Trim(),
-                        DataPassword = skinTextBoxPassword.Text.Trim(),
-                        DataAddress = skinTextBoxAddress.Text.Trim()
+                        Account = skinTextBoxAccount.Text.Trim(),
+                        Password = skinTextBoxPassword.Text.Trim(),
+                        Ip = skinTextBoxAddress.Text.Trim(),
+                        Port = skinTextBoxPort.Text.ToInt32OrDefault(-1)
                     };
                     using (FileStream fileStream = new FileStream("appconfig.bin", FileMode.Create, FileAccess.Write,
                         FileShare.ReadWrite))
@@ -224,7 +252,7 @@ ORDER BY
         private void ReadModelTable(CodeGenerate codeGenerate)
         {
             var dt = ReadTable();
-            var nameText = skinTextNamespace.Text ?? _modelConfig.Namespace;
+            var nameText = skinTextNamespace.Text ?? "Aescr.Model";
             for (int index = 0; index < dt.Rows.Count;)
             {
                 DataRow dataRow = dt.Rows[index];
