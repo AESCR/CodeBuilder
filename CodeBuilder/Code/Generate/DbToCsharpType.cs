@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace CodeBuilder.Code.Generate
 {
     public class DbToCsharpType
     {
+        #region sql server数据类型
+
         // SqlDbType转换为C#数据类型
-        public static Type SqlTypeToCsharpType(SqlDbType sqlType)
+        private static Type SqlTypeToCsharpType(SqlDbType sqlType)
         {
             switch (sqlType)
             {
@@ -69,7 +72,7 @@ namespace CodeBuilder.Code.Generate
             }
         }
         // sql server数据类型（如：varchar）转换为SqlDbType类型
-        public static SqlDbType SqlTypeToSqlDbType(string sqlTypeString)
+        private static SqlDbType SqlTypeToSqlDbType(string sqlTypeString)
         {
             SqlDbType dbType = SqlDbType.Variant;//默认为Object
 
@@ -162,6 +165,115 @@ namespace CodeBuilder.Code.Generate
             }
             return dbType;
         }
+
+        #endregion
+
+        #region Mysql
+        private static Type MySqlTypeToCsharpType(MySqlDbType sqlType)
+        {
+            switch (sqlType)
+            {
+                case MySqlDbType.Int16:
+                    return typeof(Int16);
+                case MySqlDbType.Binary:
+                    return typeof(Object);
+                case MySqlDbType.Bit:
+                    return typeof(Boolean);
+                case MySqlDbType.VarString:
+                case MySqlDbType.TinyText:
+                case MySqlDbType.Text:
+                case MySqlDbType.MediumText:
+                case MySqlDbType.MediumBlob:
+                case MySqlDbType.LongText:
+                case MySqlDbType.LongBlob:
+                    return typeof(String);
+                case MySqlDbType.VarChar:
+                    return typeof(Char);
+                default:
+                    return typeof(Object);
+            }
+        }
+        private static MySqlDbType MySqlTypeToSqlDbType(string sqlTypeString)
+        {
+            MySqlDbType dbType = MySqlDbType.VarString;
+
+            switch (sqlTypeString.ToLower())
+            {
+                case "char":
+                    dbType = MySqlDbType.VarChar;
+                    break;
+                case "varchar":
+                    dbType = MySqlDbType.VarString;
+                    break;
+                case "tinytext":
+                    dbType = MySqlDbType.TinyText;
+                    break;
+                case "blob":
+                    dbType = MySqlDbType.Blob;
+                    break;
+                case "text":
+                    dbType = MySqlDbType.Text;
+                    break;
+                case "mediumblob":
+                    dbType = MySqlDbType.MediumBlob;
+                    break;
+                case "mediumtext":
+                    dbType = MySqlDbType.MediumText;
+                    break;
+                case "longblob":
+                    dbType = MySqlDbType.LongBlob;
+                    break;
+                case "longtext":
+                    dbType = MySqlDbType.LongText;
+                    break;
+                case "date":
+                    dbType = MySqlDbType.Date;
+                    break;
+                case "time":
+                    dbType = MySqlDbType.Time;
+                    break;
+                case "year":
+                    dbType = MySqlDbType.Year;
+                    break;
+                case "dateTime":
+                    dbType = MySqlDbType.DateTime;
+                    break;
+                case "timestamp":
+                    dbType = MySqlDbType.Timestamp;
+                    break;
+                case "int":
+                case "integer":
+                    dbType = MySqlDbType.Int32;
+                    break;
+                case "bigint":
+                    dbType = MySqlDbType.Int64;
+                    break;
+                case "float":
+                    dbType = MySqlDbType.Float;
+                    break;
+                case "double":
+                    dbType = MySqlDbType.Double;
+                    break;
+                case "decimal":
+                    dbType = MySqlDbType.Decimal;
+                    break;
+                case "mediumint":
+                    dbType = MySqlDbType.Int24;
+                    break;
+                case "smallint":
+                    dbType = MySqlDbType.Int16;
+                    break;
+                case "bit":
+                    dbType = MySqlDbType.Bit;
+                    break;
+                case "tinyint":
+                    dbType = MySqlDbType.Bit;
+                    break;
+            }
+            return dbType;
+        }
+
+        #endregion
         /// <summary>
         ///  SqlDbType转换为C#数据类型
         /// </summary>
@@ -170,6 +282,11 @@ namespace CodeBuilder.Code.Generate
         public static string MsSqlToCsharpType(string sqlTypeString)
         {
             var type= SqlTypeToCsharpType(SqlTypeToSqlDbType(sqlTypeString));
+            return type.Name;
+        }
+        public static string MySqlToCsharpType(string sqlTypeString)
+        {
+            var type = MySqlTypeToCsharpType(MySqlTypeToSqlDbType(sqlTypeString));
             return type.Name;
         }
     }

@@ -13,7 +13,7 @@ namespace CodeBuilder.Code.Generate
     /// </summary>
     public class CodeGenerate
     {
-        public string SavePath = "./Code";
+        public string DownloadPath = "./Code";
         private readonly List<string> _importNamespace;
         private readonly List<NamespaceTemplate> _namespaceCode;
         public CodeGenerate()
@@ -84,13 +84,13 @@ namespace CodeBuilder.Code.Generate
         /// 保存模板
         /// </summary>
         /// <returns></returns>
-        public void Save()
+        public bool Save()
         {
             var codeDic = Show();
             //开始输出模板
             foreach (var keyValue in codeDic)
             {
-                var directoryPath = Path.GetFullPath(SavePath);
+                var directoryPath = Path.GetFullPath(DownloadPath);
                 if (string.IsNullOrEmpty(directoryPath) == false)
                 {
                     if (Directory.Exists(directoryPath) == false)
@@ -106,6 +106,7 @@ namespace CodeBuilder.Code.Generate
                     fileStream.Close();
                 }
             }
+            return true;
         }
     }
 }

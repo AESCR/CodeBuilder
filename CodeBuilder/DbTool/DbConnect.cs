@@ -20,13 +20,21 @@ namespace CodeBuilder.DbTool
         /// 密码
         /// </summary>
         public string Password { get; set; }
+        /// <summary>
+        /// 数据库
+        /// </summary>
+        public string Database { get; set; }
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
+        public DataBaseType DbType { get; set; } = DataBaseType.MsSQL;
 
         /// <summary>
         /// 获取连接字符串
         /// </summary>
-        public string GetConnection(DataBaseType dbType)
+        public string GetConnection()
         {
-            switch (dbType)
+            switch (DbType)
             {
                 case DataBaseType.MsSQL:
                     return

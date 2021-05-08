@@ -10,7 +10,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 字段模板
     /// </summary>
-    public class FieldTemplate : DbModelTemplate
+    public class FieldTemplate : AttributeTemplate
     {
         /// <summary>
         /// 是否是属性

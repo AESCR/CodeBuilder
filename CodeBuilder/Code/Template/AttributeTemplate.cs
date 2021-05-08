@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace CodeBuilder.Code.Template
 {
     /// <summary>
-    /// Db实体模板
+    /// 属性模板
     /// </summary>
-    public class DbModelTemplate
+    public class AttributeTemplate
     {
         /// <summary>
         /// 是否是数据库实体
@@ -26,7 +26,7 @@ namespace CodeBuilder.Code.Template
         /// <summary>
         /// 最大长度
         /// </summary>
-        public int MaxLength { get; set; } = 0;
+        public long MaxLength { get; set; } = 0;
         /// <summary>
         /// 数据库类型
         /// </summary>
