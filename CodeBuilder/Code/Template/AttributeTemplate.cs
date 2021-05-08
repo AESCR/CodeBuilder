@@ -12,11 +12,12 @@ namespace CodeBuilder.Code.Template
     public class AttributeTemplate
     {
         /// <summary>
-        /// 是否是数据库实体
+        /// 是否生成属性
         /// </summary>
-        public bool IsDbModel { get; set; } =true;
+    
+        public bool IsGenerateAttribute { get; set; } = true;
         /// <summary>
-        /// 是否是主键
+        /// 主键
         /// </summary>
         public bool IsKey { get; set; } = false;
         /// <summary>
@@ -35,5 +36,17 @@ namespace CodeBuilder.Code.Template
         /// 小数位数
         /// </summary>
         public int? DecimalDigits { get; set; }
+        /// <summary>
+        /// 是手机号
+        /// </summary>
+        public bool IsPhone { get; set; }
+        /// <summary>
+        /// 是邮箱
+        /// </summary>
+        public bool IsEMail { get; set; }
+        /// <summary>
+        /// [Table("blogs")] 表名
+        /// </summary>
+        public string TableName { get; set; }
     }
 }

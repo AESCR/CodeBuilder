@@ -101,6 +101,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Template\InterfaceTemplate.cs" />
+    <Compile Include="Code\Template\ParameterTemplate.cs" />
     <Compile Include="DbTool\DbGenerate.cs" />
     <Compile Include="DbTool\DbConnect.cs" />
     <Compile Include="Code\Generate\DbToCsharpType.cs" />
@@ -109,7 +111,6 @@
     <Compile Include="Code\Template\CommentTemplate.cs" />
     <Compile Include="Code\Template\AttributeTemplate.cs" />
     <Compile Include="Code\Template\FieldTemplate.cs" />
-    <Compile Include="Code\Template\MethodParameterTemplate.cs" />
     <Compile Include="Code\Template\MethodTemplate.cs" />
     <Compile Include="Code\Template\NamespaceTemplate.cs" />
     <Compile Include="Code\Template\VisitLimit.cs" />

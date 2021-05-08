@@ -13,6 +13,21 @@ namespace CodeBuilder.Code.Template
     public class MethodTemplate
     {
         /// <summary>
+        /// 方法标识
+        /// </summary>
+        public int Code {
+            get
+            {
+                var txt = string.Empty;
+                foreach (var parameter in Parameters)
+                {
+                    txt += parameter.ParameterTypeName;
+                }
+                txt += MethodName;
+                return txt.GetHashCode();
+            }
+        } 
+        /// <summary>
         /// 备注
         /// </summary>
         public CommentTemplate Comment { get; set; }
@@ -30,7 +45,7 @@ namespace CodeBuilder.Code.Template
         /// <summary>
         /// 参数
         /// </summary>
-        public List<MethodParameterTemplate> Parameters { get; set; } = new List<MethodParameterTemplate>();
+        public List<ParameterTemplate> Parameters { get; set; } = new List<ParameterTemplate>();
 
         /// <summary>
         /// 是否是虚方法
@@ -66,7 +81,10 @@ namespace CodeBuilder.Code.Template
         {
             MethodLimit = visitLimit.GetCustomAttributeDescription();
         }
-        public List<string> Codes=new List<string>();
+        /// <summary>
+        /// 一行代码
+        /// </summary>
+        public List<string> CodeLine=new List<string>();
         /// <summary>
         /// 生成代码
         /// </summary>
@@ -84,7 +102,7 @@ namespace CodeBuilder.Code.Template
                 }
                 var parameters = string.Empty;
                 int index = 0;
-                foreach (MethodParameterTemplate parameter in Parameters)
+                foreach (ParameterTemplate parameter in Parameters)
                 {
                     parameters = parameters + $"{parameter.ParameterTypeName} {parameter.ParameterName}";
                     index++;
@@ -105,11 +123,11 @@ namespace CodeBuilder.Code.Template
                     stringWriter.WriteLine($"{MethodLimit} {ReturnName} {MethodName}({parameters})");
                 }
                 stringWriter.WriteLine("{");
-                if (Codes.Count==0)
+                if (CodeLine.Count==0&& ReturnName!= "void")
                 {
                     stringWriter.WriteLine("\tthrow null;");
                 }
-                foreach (var code in Codes)
+                foreach (var code in CodeLine)
                 {
                     stringWriter.WriteLine("\t"+code);
                 }

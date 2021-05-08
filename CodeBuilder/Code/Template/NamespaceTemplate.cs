@@ -43,6 +43,16 @@ namespace CodeBuilder.Code.Template
             _classTemplate.Add(classTemplate);
         }
         /// <summary>
+        /// 添加类模板
+        /// </summary>
+        /// <returns></returns>
+        public ClassTemplate CreateClass()
+        {
+            ClassTemplate classTemplate=new ClassTemplate();
+            _classTemplate.Add(classTemplate);
+            return classTemplate;
+        }
+        /// <summary>
         /// 生成代码
         /// </summary>
         /// <returns></returns>
@@ -76,9 +86,5 @@ namespace CodeBuilder.Code.Template
             }
         }
 
-        public List<ClassTemplate> GetClass()
-        {
-            return _classTemplate;
-        }
     }
 }

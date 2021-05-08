@@ -64,7 +64,7 @@ namespace CodeBuilder.Code.Template
                 }
                 if (IsProperty)
                 {
-                    if (IsDbModel)
+                    if (IsGenerateAttribute)
                     {
                         var commentName = Comment?.CommentName;
                         if (string.IsNullOrWhiteSpace(commentName))

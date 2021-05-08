@@ -349,7 +349,7 @@ ORDER BY
             classTemplate.AddMethod(method);
             method.Overwrite = true;
             method.MethodName = "OnModelCreating";
-            method.Parameters.Add(new MethodParameterTemplate()
+            method.Parameters.Add(new ParameterTemplate()
             {
                 ParameterTypeName = "ModelBuilder",
                 ParameterName = "modelBuilder"
@@ -372,9 +372,9 @@ ORDER BY
                 tableTemplate.RealName = dataRow["表名"].ToString();
                 tableTemplate.Comment = new Code.Template.CommentTemplate();
                 tableTemplate.Comment.CommentName = dataRow["表说明"].ToString();
-                method.Codes.Add($"modelBuilder.Entity<{ tableTemplate.ClassName}>().HasComment(\"{tableTemplate.Comment.CommentName  }\");");
+                method.CodeLine.Add($"modelBuilder.Entity<{ tableTemplate.ClassName}>().HasComment(\"{tableTemplate.Comment.CommentName  }\");");
                 var field = new Code.Template.FieldTemplate();
-                field.IsDbModel = false;
+                field.IsGenerateAttribute = false;
                 field.FieldName = tableTemplate.ClassName;
                 field.FieldTypeName = $"DbSet<{tableTemplate.ClassName}>";
                 field.IsProperty = true;
@@ -382,7 +382,7 @@ ORDER BY
                 do
                 {
                     DataRow tempRow = dt.Rows[index];
-                    method.Codes.Add($"modelBuilder.Entity<{  tableTemplate.ClassName }>().Property(b => b.{ tempRow["字段名"].ToString()}).HasComment(\"{  tempRow["字段说明"].ToString()}\");");
+                    method.CodeLine.Add($"modelBuilder.Entity<{  tableTemplate.ClassName }>().Property(b => b.{ tempRow["字段名"].ToString()}).HasComment(\"{  tempRow["字段说明"].ToString()}\");");
                     index++;
                     if (index == dt.Rows.Count)
                     {

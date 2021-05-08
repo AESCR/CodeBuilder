@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace CodeBuilder.Code.Template
 {
     /// <summary>
@@ -16,6 +17,8 @@ namespace CodeBuilder.Code.Template
     {
         private readonly List<MethodTemplate> _methodsCode;
         private readonly List<FieldTemplate> _fieldsCode;
+        private readonly List<AttributeTemplate> _attributeTemplates;
+
         /// <summary> 
         /// 添加方法模板
         /// </summary>
@@ -25,6 +28,29 @@ namespace CodeBuilder.Code.Template
         {
             _methodsCode.Add(classTemplate);
         }
+
+        /// <summary>
+        /// 创建一个方法
+        /// </summary>
+        /// <returns></returns>
+        public MethodTemplate CreateMethod()
+        {
+            MethodTemplate classTemplate = new MethodTemplate();
+            _methodsCode.Add(classTemplate);
+            return classTemplate;
+        }
+
+        /// <summary>
+        /// 创建一个字段
+        /// </summary>
+        /// <returns></returns>
+        public FieldTemplate CreateField()
+        {
+            FieldTemplate field = new FieldTemplate();
+            _fieldsCode.Add(field);
+            return field;
+        }
+
         /// <summary>
         /// 添加字段模板
         /// </summary>
@@ -34,40 +60,46 @@ namespace CodeBuilder.Code.Template
         {
             _fieldsCode.Add(classTemplate);
         }
+
         public ClassTemplate()
         {
             _methodsCode = new List<MethodTemplate>();
             _fieldsCode = new List<FieldTemplate>();
+            _attributeTemplates = new List<AttributeTemplate>();
         }
+
         /// <summary>
         /// 设置类名
         /// </summary>
         public string ClassName { get; set; }
+
         /// <summary>
         /// 基类
         /// </summary>
         public ClassTemplate BaseClass { get; set; }
+
+        /// <summary>
+        /// 父类接口
+        /// </summary>
+        public List<InterfaceTemplate> Interfaces { get; set; } = new List<InterfaceTemplate>();
+
         /// <summary>
         /// 真实名称 例如：[Table("blogs")]
         /// </summary>
         public string RealName { get; set; }
-        /// <summary>
-        /// 访问限制
-        /// </summary>
-        public string LimitType => _accessType.GetCustomAttributeDescription()?? "public";
-        /// <summary>
-        /// 设置访问限制
-        /// </summary>
-        /// <param name="classLimit"></param>
-        public void SetAccess(VisitLimit classLimit)
-        {
-            _accessType = classLimit;
-        }
+
+        private string LimitType => AccessType.GetCustomAttributeDescription() ?? "public";
+
         /// <summary>
         /// 注释
         /// </summary>
         public CommentTemplate Comment { get; set; }
-        private VisitLimit _accessType { get; set; } = VisitLimit.Public;
+
+        /// <summary>
+        /// 访问限制
+        /// </summary>
+        public VisitLimit AccessType { get; set; } = VisitLimit.Public;
+
         /// <summary>
         /// 生成代码
         /// </summary>
@@ -80,16 +112,18 @@ namespace CodeBuilder.Code.Template
                 if (string.IsNullOrWhiteSpace(Comment?.CommentName) == false)
                 {
                     stringWriter.WriteLine("/// <summary>");
-                    stringWriter.WriteLine("/// "+Comment.CommentName);
+                    stringWriter.WriteLine("/// " + Comment.CommentName);
                     stringWriter.WriteLine("/// </summary>");
 #if NET5_0
                        stringWriter.WriteLine($"[Comment(\"{Comment.CommentName}\")]");
 #endif
                 }
+
                 if (string.IsNullOrWhiteSpace(RealName) == false && ClassName != RealName)
                 {
                     stringWriter.WriteLine($"[Table(\"{RealName}\")]");
                 }
+
                 //设置类名
                 {
                     stringWriter.Write($"public class {ClassName}");
@@ -99,20 +133,27 @@ namespace CodeBuilder.Code.Template
                     {
                         baseStr = baseStr + BaseClass.ClassName;
                     }
-                    if (baseStr!=":")
+
+                    if (baseStr != ":")
                     {
                         stringWriter.Write(baseStr);
                     }
+
+                    foreach (var @interface in Interfaces)
+                    {
+                        stringWriter.Write($",{@interface.InterfaceName}");
+                    }
+
                     stringWriter.WriteLine();
                     stringWriter.WriteLine("{");
                     //设置字段属性
                     {
                         foreach (var f in _fieldsCode)
                         {
-                            var filed=f.Generate();
-                            using (StringReader stringReader=new StringReader(filed))
+                            var filed = f.Generate();
+                            using (StringReader stringReader = new StringReader(filed))
                             {
-                                while (stringReader.Peek()!=-1)
+                                while (stringReader.Peek() != -1)
                                 {
                                     stringWriter.WriteLine("\t" + stringReader.ReadLine());
                                 }
@@ -121,6 +162,7 @@ namespace CodeBuilder.Code.Template
                     }
                     //设置方法
                     {
+                        //自定义方法
                         foreach (var m in _methodsCode)
                         {
                             var filed = m.Generate();
@@ -132,16 +174,32 @@ namespace CodeBuilder.Code.Template
                                 }
                             }
                         }
+                        //实现接口方法
+                        foreach (var @interface in Interfaces)
+                        {
+                            var tempMethods = @interface.GetAllMethods();
+                            foreach (var m in tempMethods)
+                            {
+                                //判断自定义方法是否实现接口方法
+                                if (_methodsCode.Exists(x => x.Code != m.Code))
+                                {
+                                    var filed = m.Generate();
+                                    using (StringReader stringReader = new StringReader(filed))
+                                    {
+                                        while (stringReader.Peek() != -1)
+                                        {
+                                            stringWriter.WriteLine("\t" + stringReader.ReadLine());
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
                     }
                     stringWriter.WriteLine("}");
                 }
                 return stringWriter.ToString();
             }
-        }
-
-        public List<FieldTemplate> GetField()
-        {
-            return _fieldsCode;
         }
     }
 }
