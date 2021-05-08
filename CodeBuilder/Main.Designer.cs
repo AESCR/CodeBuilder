@@ -58,6 +58,7 @@ namespace CodeBuilder
             this.skinTextBox1 = new CCWin.SkinControl.SkinTextBox();
             this.skinTextBox2 = new CCWin.SkinControl.SkinTextBox();
             this.skinProgressBar1 = new CCWin.SkinControl.SkinProgressBar();
+            this.skinButton4 = new CCWin.SkinControl.SkinButton();
             this.skinGroupBox1.SuspendLayout();
             this.skinGroupBox3.SuspendLayout();
             this.skinGroupBox2.SuspendLayout();
@@ -502,7 +503,7 @@ namespace CodeBuilder
             this.skinButton2.NormlBack = null;
             this.skinButton2.Size = new System.Drawing.Size(77, 28);
             this.skinButton2.TabIndex = 1;
-            this.skinButton2.Text = "预览实体";
+            this.skinButton2.Text = "预览生成";
             this.skinButton2.UseVisualStyleBackColor = false;
             this.skinButton2.Click += new System.EventHandler(this.skinBtnBuilder_Click);
             // 
@@ -577,6 +578,7 @@ namespace CodeBuilder
             this.skinGroupBox4.Controls.Add(this.skinCheckBox6);
             this.skinGroupBox4.Controls.Add(this.skinCheckBox7);
             this.skinGroupBox4.Controls.Add(this.skinTextBox2);
+            this.skinGroupBox4.Controls.Add(this.skinButton4);
             this.skinGroupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.skinGroupBox4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.skinGroupBox4.ForeColor = System.Drawing.Color.Black;
@@ -625,9 +627,9 @@ namespace CodeBuilder
             this.skinCheckBox6.SelectedDownBack = null;
             this.skinCheckBox6.SelectedMouseBack = null;
             this.skinCheckBox6.SelectedNormlBack = null;
-            this.skinCheckBox6.Size = new System.Drawing.Size(87, 21);
+            this.skinCheckBox6.Size = new System.Drawing.Size(63, 21);
             this.skinCheckBox6.TabIndex = 4;
-            this.skinCheckBox6.Text = "生成实现层";
+            this.skinCheckBox6.Text = "实现层";
             this.skinCheckBox6.UseVisualStyleBackColor = false;
             // 
             // skinCheckBox7
@@ -646,9 +648,9 @@ namespace CodeBuilder
             this.skinCheckBox7.SelectedDownBack = null;
             this.skinCheckBox7.SelectedMouseBack = null;
             this.skinCheckBox7.SelectedNormlBack = null;
-            this.skinCheckBox7.Size = new System.Drawing.Size(87, 21);
+            this.skinCheckBox7.Size = new System.Drawing.Size(63, 21);
             this.skinCheckBox7.TabIndex = 4;
-            this.skinCheckBox7.Text = "生成接口层";
+            this.skinCheckBox7.Text = "接口层";
             this.skinCheckBox7.UseVisualStyleBackColor = false;
             // 
             // skinCheckBox8
@@ -775,6 +777,24 @@ namespace CodeBuilder
             this.skinProgressBar1.TabIndex = 5;
             this.skinProgressBar1.TrackBack = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             // 
+            // skinButton4
+            // 
+            this.skinButton4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.skinButton4.BackColor = System.Drawing.Color.Transparent;
+            this.skinButton4.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinButton4.DownBack = null;
+            this.skinButton4.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinButton4.InheritColor = true;
+            this.skinButton4.Location = new System.Drawing.Point(716, 26);
+            this.skinButton4.MouseBack = null;
+            this.skinButton4.Name = "skinButton4";
+            this.skinButton4.NormlBack = null;
+            this.skinButton4.Size = new System.Drawing.Size(77, 28);
+            this.skinButton4.TabIndex = 1;
+            this.skinButton4.Text = "预览生成";
+            this.skinButton4.UseVisualStyleBackColor = false;
+            this.skinButton4.Click += new System.EventHandler(this.skinBtnBuilder_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -832,6 +852,7 @@ namespace CodeBuilder
         private CCWin.SkinControl.SkinTextBox skinTextBox1;
         private CCWin.SkinControl.SkinTextBox skinTextBox2;
         private CCWin.SkinControl.SkinProgressBar skinProgressBar1;
+        private CCWin.SkinControl.SkinButton skinButton4;
     }
 }
 
