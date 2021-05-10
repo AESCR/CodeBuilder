@@ -51,15 +51,24 @@ namespace CodeBuilder.Code.Generate
             _namespaceCode.Add(namespaceTemplate);
             return this;
         }
-
+        public NamespaceTemplate CreateNamespace()
+        {
+            NamespaceTemplate namespaceTemplate=new NamespaceTemplate();
+            _namespaceCode.Add(namespaceTemplate);
+            return namespaceTemplate;
+        }
         /// <summary>
         /// 显示模板
         /// </summary>
-        public Dictionary<string,string> Show()
+        public Dictionary<string,string> Show(string namespaceName=null)
         {
             Dictionary<string, string> codeDic=new Dictionary<string, string>();
             foreach (var namespaceTemplate in _namespaceCode)
             {
+                if (namespaceName!=null&&namespaceTemplate.NamespaceName!= namespaceName)
+                {
+                    continue;
+                }
                 using (StringWriter stringWriter = new StringWriter())
                 {
                     //写入using命名空间
@@ -71,7 +80,7 @@ namespace CodeBuilder.Code.Generate
                     var naGenerate = namespaceTemplate.Generate();
                     stringWriter.Write(naGenerate);
                     var t = stringWriter.ToString();
-                    Regex regex = new Regex(@"class[\s]+(?<name>[\w|\d]+)\s*");
+                    Regex regex = new Regex(@"class|interface[\s]+(?<name>[\w|\d]+)\s*");
                     var mt = regex.Match(t);
                     var className = mt.Groups["name"].Value;
                     codeDic.Add(className, t);

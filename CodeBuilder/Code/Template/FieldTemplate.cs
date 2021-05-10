@@ -42,11 +42,6 @@ namespace CodeBuilder.Code.Template
         /// </summary>
         public string FiledLimit { get; private set; } = VisitLimit.Public.GetCustomAttributeDescription();
 
-        public void SetFiledLimit(VisitLimit visitLimit)
-        {
-            FiledLimit = visitLimit.GetCustomAttributeDescription();
-        }
-
         /// <summary>
         /// 生成代码
         /// </summary>

@@ -15,6 +15,7 @@ using CCWin.SkinClass;
 using CodeBuilder.Code.Generate;
 using CodeBuilder.Code.Template;
 using CodeBuilder.DbTool;
+using CodeBuilder.RepositoryTool;
 using Newtonsoft.Json;
 
 namespace CodeBuilder
@@ -103,6 +104,21 @@ namespace CodeBuilder
                 dbGenerate.DownloadPath= dialog.SelectedPath + "/Model";
                 dbGenerate.Save();
                 MessageBox.Show("实体生成成功！", "提 示", MessageBoxButtons.OK);
+            }
+        }
+
+        private void skinRepositoryButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _dbConfig.Database = skinComboBoxDatabase.SelectedValue.ToString();
+                DbGenerate dbGenerate = new DbGenerate(_dbConfig);
+                var dt= dbGenerate.GetTableFlat();
+                RepositoryGenerate rg=new RepositoryGenerate(dt);
+                rg.DownloadPath = dialog.SelectedPath + "/IRepository";
+                rg.Save();
+                MessageBox.Show("数据访问层生成成功！", "提 示", MessageBoxButtons.OK);
             }
         }
     }

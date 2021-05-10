@@ -14,10 +14,12 @@ namespace CodeBuilder.Code.Template
     {
         private readonly List<string> _importNamespace;
         private readonly List<ClassTemplate> _classTemplate;
+        private readonly List<InterfaceTemplate> _interfaceTemplate;
         public NamespaceTemplate()
         {
             _classTemplate = new List<ClassTemplate>();
             _importNamespace = new List<string>();
+            _interfaceTemplate=new List<InterfaceTemplate>();
         }
         /// <summary>
         /// 命名空间名称
@@ -53,6 +55,16 @@ namespace CodeBuilder.Code.Template
             return classTemplate;
         }
         /// <summary>
+        /// 创建接口模板
+        /// </summary>
+        /// <returns></returns>
+        public InterfaceTemplate CreateInterface()
+        {
+            InterfaceTemplate interfaceTemplate = new InterfaceTemplate();
+            _interfaceTemplate.Add(interfaceTemplate);
+            return interfaceTemplate;
+        }
+        /// <summary>
         /// 生成代码
         /// </summary>
         /// <returns></returns>
@@ -72,6 +84,17 @@ namespace CodeBuilder.Code.Template
                     foreach (var classTemplate in _classTemplate)
                     {
                         var classStr = classTemplate.Generate();
+                        using (StringReader stringReader = new StringReader(classStr))
+                        {
+                            while (stringReader.Peek() != -1)
+                            {
+                                stringWriter.WriteLine("\t" + stringReader.ReadLine());
+                            }
+                        }
+                    }
+                    foreach (var interfaceTemplate in _interfaceTemplate)
+                    {
+                        var classStr = interfaceTemplate.Generate();
                         using (StringReader stringReader = new StringReader(classStr))
                         {
                             while (stringReader.Peek() != -1)

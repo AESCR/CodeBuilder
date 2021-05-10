@@ -26,12 +26,11 @@ namespace CodeBuilder.Code.Template
                 txt += MethodName;
                 return txt.GetHashCode();
             }
-        } 
+        }
         /// <summary>
         /// 备注
         /// </summary>
-        public CommentTemplate Comment { get; set; }
-
+        public string Remark { get; set; }
         /// <summary>
         /// 方法名
         /// </summary>
@@ -69,22 +68,23 @@ namespace CodeBuilder.Code.Template
         /// 是否重写
         /// </summary>
         public bool Overwrite { get; set; } = false;
+       
+        private string Limit=> MethodLimit.GetCustomAttributeDescription();
         /// <summary>
         /// 方法访问限制
         /// </summary>
-        public string MethodLimit { get; private set; } = VisitLimit.Public.GetCustomAttributeDescription();
-        /// <summary>
-        /// 设置访问权限
-        /// </summary>
-        /// <param name="visitLimit"></param>
-        public void SetMethodLimit(VisitLimit visitLimit)
-        {
-            MethodLimit = visitLimit.GetCustomAttributeDescription();
-        }
+        public VisitLimit MethodLimit { get; set; } = VisitLimit.Public;
         /// <summary>
         /// 一行代码
         /// </summary>
         public List<string> CodeLine=new List<string>();
+
+        public ParameterTemplate CreateParameter()
+        {
+            ParameterTemplate parameter=new ParameterTemplate();
+            Parameters.Add(parameter);
+            return parameter;
+        }
         /// <summary>
         /// 生成代码
         /// </summary>
@@ -96,9 +96,9 @@ namespace CodeBuilder.Code.Template
              
                 stringWriter.WriteLine("/// <summary>");
                 //设置属性注释
-                if (string.IsNullOrWhiteSpace(Comment?.CommentName) == false)
+                if (string.IsNullOrWhiteSpace(Remark) == false)
                 {
-                    stringWriter.WriteLine("/// " + Comment.CommentName);
+                    stringWriter.WriteLine("/// " + Remark);
                 }
                 var parameters = string.Empty;
                 int index = 0;
@@ -113,25 +113,34 @@ namespace CodeBuilder.Code.Template
                     stringWriter.WriteLine("/// <param name="+ parameter.ParameterName+ ">"+parameter.Remark+"</param>");
                 }
                 stringWriter.WriteLine("/// </summary>");
-
+                if (IsInterface==false)
+                {
+                    stringWriter.Write(Limit+" ");
+                }
                 if (Overwrite)
                 {
-                    stringWriter.WriteLine($"{MethodLimit} override {ReturnName} {MethodName}({parameters})");
+                    stringWriter.WriteLine($"override ");
+                }
+                stringWriter.Write($"{ReturnName} {MethodName}({parameters})");
+                if (IsInterface==false)
+                {
+                    stringWriter.WriteLine();
+                    stringWriter.WriteLine("{");
+                    if (CodeLine.Count == 0 && ReturnName != "void" && IsInterface == false)
+                    {
+                        stringWriter.WriteLine("\tthrow null;");
+                    }
+                    foreach (var code in CodeLine)
+                    {
+                        stringWriter.WriteLine("\t" + code);
+                    }
+                    stringWriter.WriteLine("}");
                 }
                 else
                 {
-                    stringWriter.WriteLine($"{MethodLimit} {ReturnName} {MethodName}({parameters})");
+                    stringWriter.WriteLine(";");
                 }
-                stringWriter.WriteLine("{");
-                if (CodeLine.Count==0&& ReturnName!= "void")
-                {
-                    stringWriter.WriteLine("\tthrow null;");
-                }
-                foreach (var code in CodeLine)
-                {
-                    stringWriter.WriteLine("\t"+code);
-                }
-                stringWriter.WriteLine("}");
+              
                 return stringWriter.ToString();
             }
 
