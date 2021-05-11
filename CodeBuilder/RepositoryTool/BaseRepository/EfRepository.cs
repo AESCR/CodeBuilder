@@ -241,8 +241,6 @@ namespace CodeBuilder.RepositoryTool.BaseRepository
             var query = _dbContext.Set<TEntity>().AsNoTracking().Where(match);
             return query;
         }
-
-
         public IQueryable<TEntity> Filter(IQueryable<TEntity> query, Expression<Func<TEntity, bool>> match)
         {
             return query.Where(match);
