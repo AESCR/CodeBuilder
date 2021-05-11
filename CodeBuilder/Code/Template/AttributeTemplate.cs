@@ -9,6 +9,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 属性模板
     /// </summary>
+    [Serializable]
     public class AttributeTemplate
     {
         /// <summary>

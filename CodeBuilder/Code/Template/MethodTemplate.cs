@@ -10,6 +10,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 方法模板
     /// </summary>
+    [Serializable]
     public class MethodTemplate
     {
         /// <summary>

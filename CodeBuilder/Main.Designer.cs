@@ -43,7 +43,7 @@ namespace CodeBuilder
             this.skinCheckBoxContext = new CCWin.SkinControl.SkinCheckBox();
             this.skinRemoveBoxUnderline = new CCWin.SkinControl.SkinCheckBox();
             this.skinTextNamespace = new CCWin.SkinControl.SkinTextBox();
-            this.skinButton2 = new CCWin.SkinControl.SkinButton();
+            this.skinPreviewModelButton = new CCWin.SkinControl.SkinButton();
             this.skinButton5 = new CCWin.SkinControl.SkinButton();
             this.skinGroupBox2 = new CCWin.SkinControl.SkinGroupBox();
             this.skinRepositoryButton = new CCWin.SkinControl.SkinButton();
@@ -308,7 +308,7 @@ namespace CodeBuilder
             this.skinGroupBox3.Controls.Add(this.skinCheckBoxContext);
             this.skinGroupBox3.Controls.Add(this.skinRemoveBoxUnderline);
             this.skinGroupBox3.Controls.Add(this.skinTextNamespace);
-            this.skinGroupBox3.Controls.Add(this.skinButton2);
+            this.skinGroupBox3.Controls.Add(this.skinPreviewModelButton);
             this.skinGroupBox3.Controls.Add(this.skinButton5);
             this.skinGroupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.skinGroupBox3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -428,23 +428,22 @@ namespace CodeBuilder
             this.skinTextNamespace.WaterText = "设置命名空间";
             this.skinTextNamespace.WordWrap = true;
             // 
-            // skinButton2
+            // skinPreviewModelButton
             // 
-            this.skinButton2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.skinButton2.BackColor = System.Drawing.Color.Transparent;
-            this.skinButton2.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinButton2.DownBack = null;
-            this.skinButton2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.skinButton2.InheritColor = true;
-            this.skinButton2.Location = new System.Drawing.Point(716, 33);
-            this.skinButton2.MouseBack = null;
-            this.skinButton2.Name = "skinButton2";
-            this.skinButton2.NormlBack = null;
-            this.skinButton2.Size = new System.Drawing.Size(77, 28);
-            this.skinButton2.TabIndex = 1;
-            this.skinButton2.Text = "预览生成";
-            this.skinButton2.UseVisualStyleBackColor = false;
-            this.skinButton2.Click += new System.EventHandler(this.skinBtnBuilder_Click);
+            this.skinPreviewModelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.skinPreviewModelButton.BackColor = System.Drawing.Color.Transparent;
+            this.skinPreviewModelButton.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinPreviewModelButton.DownBack = null;
+            this.skinPreviewModelButton.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.skinPreviewModelButton.InheritColor = true;
+            this.skinPreviewModelButton.Location = new System.Drawing.Point(716, 33);
+            this.skinPreviewModelButton.MouseBack = null;
+            this.skinPreviewModelButton.Name = "skinPreviewModelButton";
+            this.skinPreviewModelButton.NormlBack = null;
+            this.skinPreviewModelButton.Size = new System.Drawing.Size(77, 28);
+            this.skinPreviewModelButton.TabIndex = 1;
+            this.skinPreviewModelButton.Text = "预览生成";
+            this.skinPreviewModelButton.UseVisualStyleBackColor = false;
             // 
             // skinButton5
             // 
@@ -840,7 +839,7 @@ namespace CodeBuilder
         private CCWin.SkinControl.SkinComboBox skinComboxDatabaseName;
         private CCWin.SkinControl.SkinTextBox skinTextBoxPort;
         private CCWin.SkinControl.SkinButton skinRepositoryButton;
-        private CCWin.SkinControl.SkinButton skinButton2;
+        private CCWin.SkinControl.SkinButton skinPreviewModelButton;
         private CCWin.SkinControl.SkinCheckBox skinCheckBox1;
         private CCWin.SkinControl.SkinCheckBox skinCheckBox3;
         private CCWin.SkinControl.SkinCheckBox skinCheckBox4;

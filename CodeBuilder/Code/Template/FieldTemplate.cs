@@ -10,6 +10,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 字段模板
     /// </summary>
+    [Serializable]
     public class FieldTemplate : AttributeTemplate
     {
         /// <summary>

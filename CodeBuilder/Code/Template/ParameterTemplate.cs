@@ -32,6 +32,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 参数模板
     /// </summary>
+    [Serializable]
     public class ParameterTemplate
     {
         /// <summary>

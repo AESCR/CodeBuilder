@@ -13,12 +13,27 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 类模板
     /// </summary>
+    [Serializable]
     public class ClassTemplate
     {
         private readonly List<MethodTemplate> _methodsCode;
         private readonly List<FieldTemplate> _fieldsCode;
         private readonly List<AttributeTemplate> _attributeTemplates;
+        private readonly List<InterfaceTemplate> _interfaceTemplates;
+        public ClassTemplate()
+        {
+            _interfaceTemplates = new List<InterfaceTemplate>();
+            _methodsCode = new List<MethodTemplate>();
+            _fieldsCode = new List<FieldTemplate>();
+            _attributeTemplates = new List<AttributeTemplate>();
+        }
 
+        public InterfaceTemplate CreateInterface()
+        {
+            var t = new InterfaceTemplate();
+            _interfaceTemplates.Add(t);
+            return t;
+        }
         /// <summary> 
         /// 添加方法模板
         /// </summary>
@@ -61,12 +76,7 @@ namespace CodeBuilder.Code.Template
             _fieldsCode.Add(classTemplate);
         }
 
-        public ClassTemplate()
-        {
-            _methodsCode = new List<MethodTemplate>();
-            _fieldsCode = new List<FieldTemplate>();
-            _attributeTemplates = new List<AttributeTemplate>();
-        }
+      
 
         /// <summary>
         /// 设置类名
@@ -78,10 +88,7 @@ namespace CodeBuilder.Code.Template
         /// </summary>
         public ClassTemplate BaseClass { get; set; }
 
-        /// <summary>
-        /// 父类接口
-        /// </summary>
-        public List<InterfaceTemplate> Interfaces { get; set; } = new List<InterfaceTemplate>();
+      
 
         /// <summary>
         /// 真实名称 例如：[Table("blogs")]
@@ -139,7 +146,7 @@ namespace CodeBuilder.Code.Template
                         stringWriter.Write(baseStr);
                     }
 
-                    foreach (var @interface in Interfaces)
+                    foreach (var @interface in _interfaceTemplates)
                     {
                         stringWriter.Write($",{@interface.InterfaceName}");
                     }
@@ -175,7 +182,7 @@ namespace CodeBuilder.Code.Template
                             }
                         }
                         //实现接口方法
-                        foreach (var @interface in Interfaces)
+                        foreach (var @interface in _interfaceTemplates)
                         {
                             var tempMethods = @interface.GetAllMethods();
                             foreach (var m in tempMethods)

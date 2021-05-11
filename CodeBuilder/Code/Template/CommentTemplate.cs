@@ -11,6 +11,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 注释模板
     /// </summary>
+    [Serializable]
     public class CommentTemplate
     {
         /// <summary>

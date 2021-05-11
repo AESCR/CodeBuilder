@@ -101,7 +101,7 @@ namespace CodeBuilder
                 DbGenerate dbGenerate=new DbGenerate(_dbConfig);
                 dbGenerate.DbContext = skinCheckBoxContext.Checked;
                 dbGenerate.RemoveLine = skinRemoveBoxUnderline.Checked;
-                dbGenerate.DownloadPath= dialog.SelectedPath + "/Model";
+                dbGenerate.DownloadPath= dialog.SelectedPath;
                 dbGenerate.Save();
                 MessageBox.Show("实体生成成功！", "提 示", MessageBoxButtons.OK);
             }
@@ -114,9 +114,8 @@ namespace CodeBuilder
             {
                 _dbConfig.Database = skinComboBoxDatabase.SelectedValue.ToString();
                 DbGenerate dbGenerate = new DbGenerate(_dbConfig);
-                var dt= dbGenerate.GetTableFlat();
-                RepositoryGenerate rg=new RepositoryGenerate(dt);
-                rg.DownloadPath = dialog.SelectedPath + "/IRepository";
+                RepositoryGenerate rg=new RepositoryGenerate(dbGenerate);
+                rg.DownloadPath = dialog.SelectedPath;
                 rg.Save();
                 MessageBox.Show("数据访问层生成成功！", "提 示", MessageBoxButtons.OK);
             }

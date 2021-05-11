@@ -174,7 +174,13 @@ namespace CodeBuilder.Code.Generate
             switch (sqlType)
             {
                 case MySqlDbType.Int16:
-                    return typeof(Int16);
+                    return typeof(short);
+                case MySqlDbType.Int32:
+                    return typeof(int);
+                case MySqlDbType.Int24:
+                    return typeof(long);
+                case MySqlDbType.Int64:
+                    return typeof(long);
                 case MySqlDbType.Binary:
                     return typeof(Object);
                 case MySqlDbType.Bit:

@@ -10,6 +10,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 访问限制
     /// </summary>
+    [Serializable]
     public enum VisitLimit
     {
         [Description("public")] Public,

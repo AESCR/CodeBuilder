@@ -108,6 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Template\FileTemplate.cs" />
     <Compile Include="Code\Template\InterfaceTemplate.cs" />
     <Compile Include="Code\Template\ParameterTemplate.cs" />
     <Compile Include="DbTool\DbGenerate.cs" />

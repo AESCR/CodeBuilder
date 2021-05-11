@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 
 namespace CodeBuilder.Code.Template
 {
+    [Serializable]
     public class InterfaceTemplate
     { 
         /// <summary>
@@ -59,11 +60,13 @@ namespace CodeBuilder.Code.Template
             return m;
             void FindBaseMethods(InterfaceTemplate @interface)
             {
-                m.AddRange(Methods);
+                if (Methods!=null)
+                {
+                    m.AddRange(@interface.Methods);
+                }
                 if (@interface.BaseInterface == null) return;
                 foreach (InterfaceTemplate interfaceTemplate in @interface.BaseInterface)
                 {
-                    m.AddRange(interfaceTemplate.Methods);
                     FindBaseMethods(interfaceTemplate);
                 }
             }

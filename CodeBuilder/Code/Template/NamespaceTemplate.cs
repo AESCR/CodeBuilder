@@ -10,6 +10,7 @@ namespace CodeBuilder.Code.Template
     /// <summary>
     /// 命名空间模板
     /// </summary>
+    [Serializable]
     public class NamespaceTemplate
     {
         private readonly List<string> _importNamespace;

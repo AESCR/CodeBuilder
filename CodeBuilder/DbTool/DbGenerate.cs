@@ -35,17 +35,10 @@ namespace CodeBuilder.DbTool
     /// <summary>
     /// DB生成器
     /// </summary>
-    public class DbGenerate
+    public class DbGenerate: CodeGenerate
     {
         private readonly DbConnect _connect;
-        private readonly CodeGenerate _codeGenerate=new CodeGenerate();
-
-        public string DownloadPath
-        {
-            get => _codeGenerate.DownloadPath;
-            set => _codeGenerate.DownloadPath = value;
-        }
-
+        public DataBaseType DbType => _connect.DbType;
         public string Namespace { get; set; }
         /// <summary>
         /// 移除_
@@ -284,9 +277,10 @@ ORDER BY
             for (int index = 0; index < dt.Rows.Count;)
             {
                 DataRow dataRow = dt.Rows[index];
-                NamespaceTemplate namespaceTemplate = new NamespaceTemplate();
+                var ft= CreateFile();
+                ft.DownloadPath = DownloadPath + "/DbModel";
+                var namespaceTemplate= ft.CreateNamespace();
                 namespaceTemplate.NamespaceName = nameText;
-                _codeGenerate.AddNamespace(namespaceTemplate);
                 ClassTemplate classTemplate = new ClassTemplate();
                 namespaceTemplate.AddClass(classTemplate);
                 if (RemoveLine)
@@ -335,8 +329,9 @@ ORDER BY
 
         private void GenerateDbContext()
         {
-            var namespaceTemplate = new NamespaceTemplate();
-            _codeGenerate.AddNamespace(namespaceTemplate);
+            var ft = CreateFile();
+            ft.DownloadPath = DownloadPath + "/DbContext";
+            var namespaceTemplate = ft.CreateNamespace();
             namespaceTemplate.NamespaceName = "Microsoft.EntityFrameworkCore";
             var classTemplate = new ClassTemplate();
             namespaceTemplate.AddClass(classTemplate);
@@ -392,14 +387,14 @@ ORDER BY
             }
         }
 
-        public void Save()
+        public new void Save()
         {
             GenerateDbModel();
             if (DbContext)
             {
                 GenerateDbContext();
             }
-            _codeGenerate.Save();
+            base.Save();
         }
     }
 }

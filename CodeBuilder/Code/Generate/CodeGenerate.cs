@@ -14,92 +14,37 @@ namespace CodeBuilder.Code.Generate
     public class CodeGenerate
     {
         public string DownloadPath = "./Code";
-        private readonly List<string> _importNamespace;
-        private readonly List<NamespaceTemplate> _namespaceCode;
+        private readonly List<FileTemplate> _fileTemplate;
         public CodeGenerate()
         {
-            _namespaceCode = new List<NamespaceTemplate>();
-            _importNamespace = new List<string>
-            {
-                "System",
-                "System.Linq",
-                "System.Text",
-                "System.Threading.Tasks",
-                "System.Collections.Generic",
-                "System.ComponentModel.DataAnnotations",
-                "System.ComponentModel.DataAnnotations.Schema"
-            };
+            _fileTemplate=new List<FileTemplate>();
         }
 
-        /// <summary>
-        /// 导入命名空间
-        /// </summary>
-        /// <param name="namespace"></param>
-        /// <returns></returns>
-        public CodeGenerate ImportNamespace(string @namespace)
+        public FileTemplate CreateFile()
         {
-            _importNamespace.AddIfNotContains(@namespace);
-            return this;
-        }
-        /// <summary>
-        /// 添加命名空间
-        /// </summary>
-        /// <param name="namespaceTemplate"></param>
-        /// <returns></returns>
-        public CodeGenerate AddNamespace(NamespaceTemplate namespaceTemplate)
-        {
-            _namespaceCode.Add(namespaceTemplate);
-            return this;
-        }
-        public NamespaceTemplate CreateNamespace()
-        {
-            NamespaceTemplate namespaceTemplate=new NamespaceTemplate();
-            _namespaceCode.Add(namespaceTemplate);
-            return namespaceTemplate;
-        }
-        /// <summary>
-        /// 显示模板
-        /// </summary>
-        public Dictionary<string,string> Show(string namespaceName=null)
-        {
-            Dictionary<string, string> codeDic=new Dictionary<string, string>();
-            foreach (var namespaceTemplate in _namespaceCode)
-            {
-                if (namespaceName!=null&&namespaceTemplate.NamespaceName!= namespaceName)
-                {
-                    continue;
-                }
-                using (StringWriter stringWriter = new StringWriter())
-                {
-                    //写入using命名空间
-                    for (int i = 0; i < _importNamespace.Count; i++)
-                    {
-                        stringWriter.WriteLine($"using {_importNamespace[i]};");
-                    }
-                    stringWriter.WriteLine();
-                    var naGenerate = namespaceTemplate.Generate();
-                    stringWriter.Write(naGenerate);
-                    var t = stringWriter.ToString();
-                    Regex regex = new Regex(@"class|interface[\s]+(?<name>[\w|\d]+)\s*");
-                    var mt = regex.Match(t);
-                    var className = mt.Groups["name"].Value;
-                    codeDic.Add(className, t);
-                }
-            }
-            return codeDic;
+            FileTemplate fileTemplate=new FileTemplate();
+            _fileTemplate.Add(fileTemplate);
+            return fileTemplate;
         }
 
+        public List<FileTemplate> Preview()
+        {
+            return _fileTemplate;
+        }
         /// <summary>
         /// 保存模板
         /// </summary>
         /// <returns></returns>
         public bool Save()
         {
-            var codeDic = Show();
-            //开始输出模板
-            foreach (var keyValue in codeDic)
+            foreach (FileTemplate fileTemplate in _fileTemplate)
             {
-                var directoryPath = Path.GetFullPath(DownloadPath);
+                var code= fileTemplate.PreviewCode();
+                if (string.IsNullOrEmpty(fileTemplate.DownloadPath))
+                {
+                    fileTemplate.DownloadPath = DownloadPath;
+                }
+                var directoryPath = Path.GetFullPath(fileTemplate.DownloadPath);
                 if (string.IsNullOrEmpty(directoryPath) == false)
                 {
                     if (Directory.Exists(directoryPath) == false)
@@ -107,10 +52,10 @@ namespace CodeBuilder.Code.Generate
                         Directory.CreateDirectory(directoryPath);
                     }
                 }
-                var filePath = Path.Combine(directoryPath ?? string.Empty, keyValue.Key + ".cs");
+                var filePath = Path.Combine(directoryPath ?? string.Empty, fileTemplate.FileFullName);
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
                 {
-                    var bytes = Encoding.UTF8.GetBytes(keyValue.Value);
+                    var bytes = Encoding.UTF8.GetBytes(code);
                     fileStream.Write(bytes, 0, bytes.Length);
                     fileStream.Close();
                 }
