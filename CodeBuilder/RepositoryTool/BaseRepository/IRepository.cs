@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
@@ -24,13 +25,12 @@ namespace CodeBuilder.RepositoryTool.BaseRepository
         /// 添加数据
         /// </summary>
         /// <param name="entity"></param>
-        bool Insert(TEntity entity);
+        bool Insert(params TEntity[] entity);
         /// <summary>
         /// 使用Bulk批量插入数据（适合大数据量，速度非常快）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entities"></param>
-        bool BulkInsert<T>(List<T> entities);
+        /// <param name="dataTable"></param>
+        bool BulkInsert(DataTable dataTable);
 
         #endregion
 
@@ -46,11 +46,7 @@ namespace CodeBuilder.RepositoryTool.BaseRepository
         /// </summary>
         /// <param name="match">匹配条件</param>
         bool Delete(Expression<Func<TEntity, bool>> match);
-        /// <summary>
-        /// 删除数据通过主键
-        /// </summary>
-        /// <param name="id"></param>
-        bool DeleteById(object id);
+     
         #endregion
 
         #region 更新
@@ -97,12 +93,7 @@ namespace CodeBuilder.RepositoryTool.BaseRepository
         /// <returns></returns>
         bool Exist(Expression<Func<TEntity, bool>> match);
 
-        /// <summary>
-        /// 根据主键Id查询数据
-        /// </summary>
-        /// <param name="id">主键值</param>
-        /// <returns></returns>
-        TEntity FindById(object id);
+       
         /// <summary>
         /// 指定条件查询全部数据
         /// </summary>
